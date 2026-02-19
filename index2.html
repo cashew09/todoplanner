@@ -633,9 +633,15 @@
       background: #f3f8ff;
       color: #2a4f7f;
       border-radius: 999px;
-      padding: 7px 10px;
-      font-size: 12px;
+      width: 42px;
+      height: 42px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0;
+      font-size: 18px;
+      line-height: 1;
       cursor: pointer;
+      flex: 0 0 42px;
     }
     .sticker-btn.active {
       background: #2f67af;
@@ -711,12 +717,10 @@
     }
 
     .week-kpis {
-      display: flex;
-      flex-wrap: nowrap;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       margin-top: 8px;
-      overflow-x: auto;
-      scrollbar-width: thin;
     }
 
     .week-kpi {
@@ -724,8 +728,6 @@
       border-radius: 10px;
       padding: 9px;
       background: #f9fcfb;
-      min-width: 132px;
-      flex: 0 0 132px;
     }
 
     .week-kpi span { font-size: 11px; color: var(--muted); }
@@ -739,7 +741,6 @@
       border-radius: 12px;
       padding: 10px;
       background: #fff;
-      overflow-x: auto;
     }
     .report-block h4 {
       margin: 0 0 8px;
@@ -837,6 +838,8 @@
       .chip, .quick-task-btn, .sticker-btn, .routine-template-btn, .mini-btn {
         min-height: 40px;
       }
+      .week-kpi span { font-size: 10px; }
+      .week-kpi strong { font-size: 17px; }
       input[type="text"], input[type="date"], input[type="month"], textarea, select {
         font-size: 16px;
       }
@@ -879,8 +882,8 @@
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="dashboard">대시보드</button>
-      <button class="tab-btn" data-tab="calendar">캘린더·월간 리포트</button>
-      <button class="tab-btn" data-tab="annual">연간</button>
+      <button class="tab-btn" data-tab="calendar">Calendar · Monthly</button>
+      <button class="tab-btn" data-tab="annual">Yearly</button>
     </div>
 
     <section class="date-hub">
@@ -949,11 +952,11 @@
               </div>
             </div>
             <div class="sticker-wrap" id="journalSticker">
-              <button class="sticker-btn" data-sticker="🔥 몰입">🔥 몰입</button>
-              <button class="sticker-btn" data-sticker="🙂 안정">🙂 안정</button>
-              <button class="sticker-btn" data-sticker="😵 과부하">😵 과부하</button>
-              <button class="sticker-btn" data-sticker="🌿 회복">🌿 회복</button>
-              <button class="sticker-btn" data-sticker="🏖 휴식">🏖 휴식</button>
+              <button class="sticker-btn" data-sticker="🔥" title="몰입" aria-label="몰입">🔥</button>
+              <button class="sticker-btn" data-sticker="🙂" title="안정" aria-label="안정">🙂</button>
+              <button class="sticker-btn" data-sticker="😵" title="과부하" aria-label="과부하">😵</button>
+              <button class="sticker-btn" data-sticker="🌿" title="회복" aria-label="회복">🌿</button>
+              <button class="sticker-btn" data-sticker="🏖" title="휴식" aria-label="휴식">🏖</button>
             </div>
             <textarea id="journalBody" placeholder="회고: 무엇이 잘 됐고, 무엇을 개선할지"></textarea>
           </article>
@@ -1013,8 +1016,8 @@
           <article class="card life-card">
             <div class="title-row">
               <div>
-                <h3>월간 리포트</h3>
-                <p class="sub" id="monthRangeText">선택 월 기준 월간 집계</p>
+                <h3>Monthly Report</h3>
+              <p class="sub" id="monthRangeText">Selected month summary</p>
               </div>
             </div>
             <div class="report-split">
@@ -1055,7 +1058,7 @@
         <article class="card work-card">
           <div class="annual-head">
             <div>
-              <h3 style="margin:0;">연간</h3>
+              <h3 style="margin:0;">Yearly</h3>
               <p class="sub">월별 업무/루틴 흐름을 빠르게 점검하고 연간 목표를 기록하세요.</p>
             </div>
             <input type="number" id="annualYear" min="2000" max="2100" step="1" />
