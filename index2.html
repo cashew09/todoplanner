@@ -93,9 +93,10 @@
     }
 
     .toolbar {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      flex-wrap: wrap;
+      width: min(360px, 100%);
     }
 
     .btn {
@@ -327,8 +328,10 @@
     .quick-task-row {
       margin-top: 10px;
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: thin;
     }
     .quick-task-btn {
       border: 1px dashed #bfd6ff;
@@ -340,6 +343,13 @@
       cursor: pointer;
     }
     .project-filter { margin-top: 8px; }
+    .chip-group.project-filter {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }
     .project-chip {
       font-size: 12px;
       border: 1px solid #bdd3f7;
@@ -613,8 +623,10 @@
     .sticker-wrap {
       margin-bottom: 10px;
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: thin;
     }
     .sticker-btn {
       border: 1px solid #cde0ff;
@@ -699,10 +711,12 @@
     }
 
     .week-kpis {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      display: flex;
+      flex-wrap: nowrap;
       gap: 8px;
       margin-top: 8px;
+      overflow-x: auto;
+      scrollbar-width: thin;
     }
 
     .week-kpi {
@@ -710,6 +724,8 @@
       border-radius: 10px;
       padding: 9px;
       background: #f9fcfb;
+      min-width: 132px;
+      flex: 0 0 132px;
     }
 
     .week-kpi span { font-size: 11px; color: var(--muted); }
@@ -748,6 +764,10 @@
       flex-wrap: wrap;
     }
     .annual-head input { width: 120px; }
+    .annual-goal {
+      margin-top: 10px;
+      min-height: 90px;
+    }
     .annual-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -794,10 +814,10 @@
       .app { padding: 16px 14px 72px; }
       .layout { grid-template-columns: 1fr; }
       .quick-add { grid-template-columns: 1fr; }
-      .week-kpis { grid-template-columns: repeat(3, minmax(120px, 1fr)); }
       .annual-grid { grid-template-columns: 1fr; }
       .btn { width: 100%; }
       .toolbar { width: 100%; }
+      .toolbar .btn { width: 100%; }
       .routine-add { grid-template-columns: 1fr; }
       .date-hub { align-items: flex-start; }
       .tag-manager .tag-manager-head { flex-wrap: nowrap; }
@@ -860,14 +880,11 @@
     <div class="tabs">
       <button class="tab-btn active" data-tab="dashboard">대시보드</button>
       <button class="tab-btn" data-tab="calendar">캘린더·월간 리포트</button>
-      <button class="tab-btn" data-tab="annual">연간 보기</button>
+      <button class="tab-btn" data-tab="annual">연간</button>
     </div>
 
     <section class="date-hub">
-      <div>
-        <div class="label">기록 기준일</div>
-        <div class="value" id="activeDateText">0000.00.00</div>
-      </div>
+      <div class="value" id="activeDateText">0000.00.00</div>
       <label class="date-picker-trigger" aria-label="기록 기준일 선택">
         📅
         <input type="date" id="globalDatePicker" />
@@ -900,7 +917,6 @@
               <div class="quick-task-row" id="quickTaskRow">
                 <button class="quick-task-btn" data-template="메일 확인/답변">메일 확인/답변</button>
                 <button class="quick-task-btn" data-template="핵심 보고서 1건">핵심 보고서 1건</button>
-                <button class="quick-task-btn" data-template="팀 커뮤니케이션 정리">팀 커뮤니케이션 정리</button>
               </div>
             </div>
             <details class="tag-manager">
@@ -908,8 +924,8 @@
               <div class="tag-manager-body">
                 <p class="sub">필요할 때만 열어 태그를 관리하세요.</p>
                 <div class="tag-manager-head">
-                  <input type="text" id="tagInput" placeholder="태그 추가 (예: Sales, Dev, Ops)" />
-                  <button class="btn main" id="addTagBtn">추가</button>
+                  <input type="text" id="tagInput" placeholder="태그는 Personal / Work로 고정됩니다." disabled />
+                  <button class="btn main" id="addTagBtn" disabled>고정</button>
                 </div>
                 <div class="tag-list" id="tagList"></div>
               </div>
@@ -1039,11 +1055,12 @@
         <article class="card work-card">
           <div class="annual-head">
             <div>
-              <h3 style="margin:0;">연간 한눈에 보기</h3>
-              <p class="sub">월별 업무/루틴 흐름을 빠르게 점검하세요.</p>
+              <h3 style="margin:0;">연간</h3>
+              <p class="sub">월별 업무/루틴 흐름을 빠르게 점검하고 연간 목표를 기록하세요.</p>
             </div>
             <input type="number" id="annualYear" min="2000" max="2100" step="1" />
           </div>
+          <textarea id="annualGoal" class="annual-goal" placeholder="연간 목표를 작성하세요. 예: 분기별 핵심 프로젝트 완료, 개인 루틴 70% 이상 유지"></textarea>
           <div class="annual-grid" id="annualGrid"></div>
         </article>
       </section>
@@ -1053,6 +1070,8 @@
   <script>
     const STORAGE_KEY = "focus-ledger-v2";
     const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+
+    const fixedProjectTags = ["Personal", "Work"];
 
     const defaultRoutines = [
       { id: "r1", name: "아침 플래닝", done: false },
@@ -1081,7 +1100,8 @@
       selectedDate: todayKey(),
       calendarMonth: thisMonthKey(),
       annualYear: new Date().getFullYear(),
-      projectTags: ["General", "Sales", "Dev", "Ops"],
+      annualGoal: "",
+      projectTags: [...fixedProjectTags],
       quickNotes: "",
       routines: defaultRoutines.map((r) => ({ ...r })),
       routineLogs: {},
@@ -1125,6 +1145,7 @@
       weekdayRow: document.getElementById("weekdayRow"),
       calendarGrid: document.getElementById("calendarGrid"),
       annualYear: document.getElementById("annualYear"),
+      annualGoal: document.getElementById("annualGoal"),
       annualGrid: document.getElementById("annualGrid"),
       monthRangeText: document.getElementById("monthRangeText"),
       monthTodoRate: document.getElementById("monthTodoRate"),
@@ -1188,7 +1209,8 @@
         state.selectedDate = parsed.selectedDate || todayKey();
         state.calendarMonth = parsed.calendarMonth || thisMonthKey();
         state.annualYear = Number(parsed.annualYear) || new Date(state.selectedDate).getFullYear();
-        state.projectTags = Array.isArray(parsed.projectTags) && parsed.projectTags.length ? parsed.projectTags : ["General", "Sales", "Dev", "Ops"];
+        state.annualGoal = parsed.annualGoal || "";
+        state.projectTags = Array.isArray(parsed.projectTags) && parsed.projectTags.length ? parsed.projectTags : [...fixedProjectTags];
         state.quickNotes = parsed.quickNotes || "";
         state.routines = Array.isArray(parsed.routines) && parsed.routines.length
           ? parsed.routines
@@ -1225,7 +1247,7 @@
       state.todos = state.todos.map((t) => ({
         ...t,
         dueDate: t.dueDate || state.selectedDate,
-        tag: t.tag || (state.projectTags[0] || "General"),
+        tag: state.projectTags.includes(t.tag) ? t.tag : (state.projectTags[0] || "Personal"),
         topOrder: Number.isInteger(t.topOrder) ? t.topOrder : 0,
         isTop: false
       }));
@@ -1233,11 +1255,7 @@
     }
 
     function normalizeTags() {
-      const seen = new Set();
-      state.projectTags = state.projectTags
-        .map((t) => String(t || "").trim())
-        .filter((t) => t && !seen.has(t) && seen.add(t));
-      if (!state.projectTags.length) state.projectTags = ["General"];
+      state.projectTags = [...fixedProjectTags];
     }
 
     function recomputeTopFlags() {
@@ -1294,12 +1312,7 @@
     }
 
     function renderTagList() {
-      el.tagList.innerHTML = state.projectTags.map((t) => `
-        <span class="tag-pill">
-          ${escapeHTML(t)}
-          <button type="button" data-del-tag="${escapeHTML(t)}">x</button>
-        </span>
-      `).join("");
+      el.tagList.innerHTML = state.projectTags.map((t) => `<span class="tag-pill">${escapeHTML(t)}</span>`).join("");
     }
 
     function renderProjectFilters() {
@@ -1423,6 +1436,7 @@
       el.quickNotes.value = state.quickNotes;
       el.calendarMonth.value = state.calendarMonth;
       el.annualYear.value = String(state.annualYear);
+      el.annualGoal.value = state.annualGoal || "";
 
       [...el.filterChips.querySelectorAll(".chip")].forEach((chip) => {
         chip.classList.toggle("active", chip.dataset.filter === state.filter);
@@ -1443,7 +1457,7 @@
       state.todos.unshift({
         id: `${Date.now()}-${Math.random().toString(16).slice(2, 7)}`,
         text,
-        tag: el.todoTagSelect.value || state.projectTags[0] || "General",
+        tag: el.todoTagSelect.value || state.projectTags[0] || "Personal",
         priority: "mid",
         dueDate,
         topOrder: 0,
@@ -1465,7 +1479,7 @@
       state.todos.unshift({
         id: `${Date.now()}-${Math.random().toString(16).slice(2, 7)}`,
         text: value,
-        tag: el.todoTagSelect.value || state.projectTags[0] || "General",
+        tag: el.todoTagSelect.value || state.projectTags[0] || "Personal",
         priority: "mid",
         dueDate: state.selectedDate,
         topOrder: 0,
@@ -1734,7 +1748,8 @@
           state.selectedDate = incoming.selectedDate || todayKey();
           state.calendarMonth = incoming.calendarMonth || state.selectedDate.slice(0, 7);
           state.annualYear = Number(incoming.annualYear) || new Date(state.selectedDate).getFullYear();
-          state.projectTags = Array.isArray(incoming.projectTags) && incoming.projectTags.length ? incoming.projectTags : ["General", "Sales", "Dev", "Ops"];
+          state.annualGoal = incoming.annualGoal || "";
+          state.projectTags = Array.isArray(incoming.projectTags) && incoming.projectTags.length ? incoming.projectTags : [...fixedProjectTags];
           state.quickNotes = incoming.quickNotes || "";
           state.routines = Array.isArray(incoming.routines) && incoming.routines.length
             ? incoming.routines
@@ -1779,44 +1794,7 @@
         addTodoByTemplate(btn.dataset.template);
       });
 
-      el.addTagBtn.addEventListener("click", () => {
-        const tag = (el.tagInput.value || "").trim();
-        if (!tag) return;
-        if (!state.projectTags.includes(tag)) {
-          state.projectTags.push(tag);
-          save();
-          renderTagOptions();
-          renderTagList();
-          el.todoTagSelect.value = tag;
-        }
-        el.tagInput.value = "";
-      });
-
-      el.tagInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          el.addTagBtn.click();
-        }
-      });
-
-      el.tagList.addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-del-tag]");
-        if (!btn) return;
-        const tag = btn.dataset.delTag;
-        if (state.projectTags.length <= 1) return;
-        state.projectTags = state.projectTags.filter((t) => t !== tag);
-        if (state.projectFilter === tag) state.projectFilter = "all";
-        state.todos = state.todos.map((todo) => ({
-          ...todo,
-          tag: todo.tag === tag ? state.projectTags[0] : todo.tag
-        }));
-        save();
-        renderTagOptions();
-        renderTagList();
-        renderTodos();
-        renderCalendar();
-        renderMonthlyReport();
-      });
+      el.addTagBtn.addEventListener("click", () => {});
 
       el.globalDatePicker.addEventListener("change", () => {
         if (!el.globalDatePicker.value) return;
@@ -1929,6 +1907,11 @@
           updateStats();
           renderMonthlyReport();
         });
+      });
+
+      el.annualGoal.addEventListener("input", () => {
+        state.annualGoal = el.annualGoal.value;
+        save();
       });
 
       el.journalSticker.addEventListener("click", (e) => {
