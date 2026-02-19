@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Todo List Planner | Daily & Weekly Productivity</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg: #f3f7ff;
+      --surface: #ffffff;
+      --surface-soft: #eef3ff;
+      --ink: #111a2c;
+      --muted: #5b6b85;
+      --line: #d4deef;
+      --brand: #2f67af;
+      --brand-2: #4d83d1;
+      --warn: #ef8f24;
+      --danger: #d9465f;
+      --radius-xl: 26px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-lg: 0 22px 55px rgba(18, 25, 24, 0.12);
+      --shadow-md: 0 10px 28px rgba(18, 25, 24, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% -10%, #dce8ff 0, transparent 38%),
+        radial-gradient(circle at 85% 0%, #e9f0ff 0, transparent 28%),
+        var(--bg);
+    }
+
+    .app {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 30px 20px 90px;
+    }
+
+    .hero {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      color: #fff;
+      background:
+        linear-gradient(140deg, rgba(27, 59, 108, 0.95), rgba(47, 103, 175, 0.88)),
+        url("https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=1400&auto=format&fit=crop") center/cover;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+      animation: rise 0.6s ease both;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: auto -120px -100px auto;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
+      pointer-events: none;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: "Outfit", sans-serif;
+      font-size: clamp(28px, 4.2vw, 42px);
+      letter-spacing: -0.03em;
+    }
+
+    .brand p {
+      margin: 10px 0 0;
+      max-width: 620px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 15px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .btn.main {
+      background: #fff;
+      color: #1f4f94;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
+    }
+
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.36);
+    }
+
+    .stats {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .stat {
+      border-radius: var(--radius-md);
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(3px);
+    }
+
+    .stat .label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .stat .value {
+      margin-top: 4px;
+      font-size: 24px;
+      font-weight: 700;
+      font-family: "Outfit", sans-serif;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin: 16px 0 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .tab-btn.active {
+      background: #2f67af;
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 10px 20px rgba(47, 103, 175, 0.24);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .date-hub {
+      margin-top: 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .date-hub .label { font-size: 12px; color: var(--muted); }
+    .date-hub .value {
+      margin-top: 2px;
+      font-family: "Outfit", sans-serif;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+    }
+    .date-picker-trigger {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      overflow: hidden;
+    }
+    .date-picker-trigger input[type="date"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .layout {
+      margin-top: 10px;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      align-items: start;
+    }
+    .split-layout {
+      grid-template-columns: 1.25fr 0.75fr;
+      align-items: stretch;
+    }
+    .column { display: grid; gap: 14px; align-content: start; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 16px;
+      animation: rise 0.45s ease both;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card h2,
+    .card h3 { margin: 0; font-family: "Outfit", sans-serif; letter-spacing: -0.01em; }
+
+    .sub { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
+
+    .quick-add {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 170px auto;
+      margin-top: 10px;
+    }
+    .input-zone {
+      border: 1px solid #d8e5ff;
+      border-radius: 12px;
+      background: #f8fbff;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .tag-manager {
+      margin-top: 10px;
+      border: 1px dashed #cdd9ee;
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: #f9fbff;
+      opacity: 0.92;
+    }
+    .tag-manager summary {
+      cursor: pointer;
+      color: #5b6b85;
+      font-size: 12px;
+      font-weight: 600;
+      list-style: none;
+    }
+    .tag-manager summary::-webkit-details-marker { display: none; }
+    .tag-manager .tag-manager-body { margin-top: 8px; }
+    .tag-manager[open] { opacity: 1; }
+    .tag-manager .sub { margin: 0 0 8px; }
+    .tag-manager input, .tag-manager button { height: 36px; }
+    .tag-manager .btn.main { padding: 8px 12px; font-size: 12px; }
+    .tag-manager .tag-list { margin-top: 6px; }
+    .tag-manager .tag-pill { font-size: 11px; }
+    .tag-manager .tag-pill button { font-size: 11px; }
+    .tag-manager .tag-manager-head {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: nowrap;
+      margin-bottom: 8px;
+    }
+    .tag-manager .tag-manager-head input { flex: 1; min-width: 0; }
+    .tag-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .tag-pill {
+      font-size: 12px;
+      border: 1px solid #cde0ff;
+      color: #214875;
+      background: #ecf3ff;
+      border-radius: 999px;
+      padding: 5px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tag-pill button {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      color: #587ba7;
+      padding: 0;
+      font-size: 12px;
+    }
+    .quick-task-row {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .quick-task-btn {
+      border: 1px dashed #bfd6ff;
+      background: #f2f7ff;
+      color: #2b4f7f;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .project-filter { margin-top: 8px; }
+    .project-chip {
+      font-size: 12px;
+      border: 1px solid #bdd3f7;
+      background: #eef4ff;
+      color: #315b94;
+      border-radius: 10px;
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+    .project-chip.active {
+      background: #d9e7ff;
+      border-color: #8eb1e8;
+      color: #173f74;
+      font-weight: 600;
+    }
+
+    input[type="text"], input[type="date"], input[type="month"], textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 11px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    textarea { min-height: 140px; resize: vertical; }
+
+    input:focus, textarea:focus, select:focus {
+      outline: 2px solid rgba(37, 165, 141, 0.23);
+      border-color: var(--brand-2);
+    }
+
+    .chip-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 12px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      border-radius: 999px;
+      padding: 7px 11px;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      border-color: transparent;
+      background: #2f67af;
+      color: #fff;
+      box-shadow: 0 8px 16px rgba(47, 103, 175, 0.24);
+    }
+
+    .todo-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+      max-height: 390px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .todo-item {
+      display: grid;
+      grid-template-columns: auto auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 9px;
+      background: #fff;
+    }
+
+    .todo-item.dragging { opacity: 0.45; }
+    .todo-actions { display: flex; gap: 6px; }
+    .mini-btn.top-active {
+      background: #e9f2ff;
+      border-color: #c6dbff;
+      color: #244d86;
+      font-weight: 600;
+    }
+
+    .work-card {
+      border: 1px solid #cad7ef;
+      background: linear-gradient(180deg, #f7faff, #ffffff 40%);
+    }
+
+    .work-top {
+      border: 1px solid #d7e4ff;
+      border-radius: 12px;
+      padding: 10px;
+      background: #edf4ff;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #35507a;
+    }
+
+    .work-top strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #183968;
+      font-family: "Outfit", sans-serif;
+      font-size: 13px;
+    }
+
+    .drag-handle {
+      border: 1px dashed var(--line);
+      border-radius: 7px;
+      padding: 2px 6px;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: grab;
+      user-select: none;
+    }
+
+    .todo-item.done { background: #f1f5fb; color: #75839a; }
+    .todo-item.done .todo-title { text-decoration: line-through; }
+
+    .priority {
+      display: inline-block;
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-weight: 600;
+    }
+
+    .p-high { background: #ffe9ed; color: #c53f58; }
+    .p-mid { background: #fff4e3; color: #ba7a20; }
+    .p-low { background: #eaf2ff; color: #2f67af; }
+
+    .todo-meta {
+      margin-top: 4px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .project-tag {
+      font-size: 11px;
+      color: #2a4d7f;
+      background: #eaf2ff;
+      border: 1px solid #cfe0ff;
+      border-radius: 999px;
+      padding: 3px 8px;
+    }
+    .top-rank {
+      font-size: 11px;
+      color: #244d86;
+      background: #e4efff;
+      border: 1px solid #c6dbff;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-weight: 600;
+    }
+
+    .due {
+      font-size: 11px;
+      color: #2c5b9a;
+      background: #ebf2ff;
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid #cfe0ff;
+    }
+
+    .mini-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 5px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .aside { display: grid; gap: 14px; }
+
+    .routine-list { display: grid; gap: 8px; margin-top: 8px; }
+
+    .routine-item {
+      border: 1px solid #d5e3fb;
+      border-radius: 12px;
+      padding: 10px 11px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      background: #f5f8ff;
+    }
+
+    .life-card {
+      border: 1px solid #d5e3fb;
+      background: linear-gradient(180deg, #f5f8ff, #ffffff 45%);
+    }
+
+    .routine-item strong { font-size: 13px; }
+    .routine-name {
+      border: 0;
+      background: transparent;
+      padding: 2px 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2d4f80;
+    }
+
+    .routine-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .routine-actions .mini-btn {
+      min-width: 56px;
+      white-space: nowrap;
+      border-color: #cfe0ff;
+      color: #2f5690;
+      background: #f1f6ff;
+    }
+    .streak-badge {
+      font-size: 11px;
+      color: #2f5690;
+      background: #e7f0ff;
+      border: 1px solid #c8daff;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .routine-add {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+    .routine-template-row {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .routine-template-btn {
+      border: 1px dashed #bfd6ff;
+      background: #f2f7ff;
+      color: #2f5690;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .progress-wrap {
+      margin-top: 8px;
+      background: #eaf0ef;
+      border-radius: 999px;
+      overflow: hidden;
+      height: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2f67af, #4d83d1);
+      transition: width 0.35s ease;
+    }
+
+    .tagline { font-size: 12px; color: var(--muted); margin: 0; }
+    .sticker-wrap {
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .sticker-btn {
+      border: 1px solid #cde0ff;
+      background: #f3f8ff;
+      color: #2a4f7f;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .sticker-btn.active {
+      background: #2f67af;
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .calendar-layout {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .calendar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .weekday-row, .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .weekday {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 4px 0;
+    }
+
+    .day-cell {
+      min-height: 94px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+      transition: transform 0.1s ease, border-color 0.15s ease;
+    }
+
+    .day-cell:hover { transform: translateY(-1px); }
+    .day-cell.muted { opacity: 0.35; cursor: default; }
+    .day-cell.today { border-color: #6d9be0; }
+    .day-cell.selected { border-color: #2f67af; box-shadow: 0 8px 16px rgba(47, 103, 175, 0.14); }
+
+    .day-num {
+      font-family: "Outfit", sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .day-summary {
+      font-size: 11px;
+      color: #2d5a96;
+      border-radius: 8px;
+      background: #ecf3ff;
+      border: 1px solid #cfe0ff;
+      padding: 3px 6px;
+      display: inline-block;
+      align-self: flex-start;
+    }
+
+    .week-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .week-kpi {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px;
+      background: #f9fcfb;
+    }
+
+    .week-kpi span { font-size: 11px; color: var(--muted); }
+    .week-kpi strong { display: block; font-family: "Outfit", sans-serif; font-size: 20px; margin-top: 3px; }
+    .report-split {
+      display: grid;
+      gap: 10px;
+    }
+    .report-block {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+      overflow-x: auto;
+    }
+    .report-block h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      font-family: "Outfit", sans-serif;
+    }
+    .report-block.work { border-color: #cad7ef; background: #f7faff; }
+    .report-block.life { border-color: #d5e3fb; background: #f5f8ff; }
+
+    .day-task-list { display: grid; gap: 8px; margin-top: 10px; }
+    .day-task { border: 1px solid var(--line); border-radius: 9px; padding: 8px; background: #fff; font-size: 12px; }
+    .annual-layout {
+      margin-top: 10px;
+      display: grid;
+      gap: 14px;
+    }
+    .annual-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .annual-head input { width: 120px; }
+    .annual-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .annual-card {
+      border: 1px solid #cad7ef;
+      border-radius: 12px;
+      background: #f7faff;
+      padding: 10px;
+    }
+    .annual-card h4 {
+      margin: 0 0 8px;
+      font-family: "Outfit", sans-serif;
+      font-size: 14px;
+    }
+    .annual-kpi {
+      display: grid;
+      gap: 6px;
+    }
+    .annual-kpi span {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #385882;
+    }
+    .annual-kpi strong { color: #163f73; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr 1fr; }
+      .split-layout { grid-template-columns: 1fr; }
+      .calendar-layout { grid-template-columns: 1fr; }
+      .annual-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .hero { padding: 24px; }
+    }
+
+    @media (max-width: 760px) {
+      .app { padding: 16px 14px 72px; }
+      .layout { grid-template-columns: 1fr; }
+      .quick-add { grid-template-columns: 1fr; }
+      .week-kpis { grid-template-columns: repeat(3, minmax(120px, 1fr)); }
+      .annual-grid { grid-template-columns: 1fr; }
+      .btn { width: 100%; }
+      .toolbar { width: 100%; }
+      .routine-add { grid-template-columns: 1fr; }
+      .date-hub { align-items: flex-start; }
+      .tag-manager .tag-manager-head { flex-wrap: nowrap; }
+      .tag-manager .btn { width: auto; }
+      .tabs {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: var(--bg);
+        padding-top: 6px;
+      }
+      .date-hub {
+        position: sticky;
+        top: 58px;
+        z-index: 29;
+      }
+      .chip, .quick-task-btn, .sticker-btn, .routine-template-btn, .mini-btn {
+        min-height: 40px;
+      }
+      input[type="text"], input[type="date"], input[type="month"], textarea, select {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="hero-top">
+        <div class="brand">
+          <h1>Smart Todo Planner</h1>
+          <p>일상과 업무를 차분하게 정리할 수 있는 통합 플래너입니다. 오늘 해야 할 일부터 주간 흐름, 연간 누적까지 한 화면에서 부드럽고 명확하게 관리해보세요.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn main" id="exportBtn">백업 내보내기</button>
+          <button class="btn ghost" id="importBtn">백업 가져오기</button>
+          <input type="file" id="importFile" accept="application/json" hidden />
+        </div>
+      </div>
+      <div class="stats">
+        <article class="stat">
+          <div class="label">선택 날짜 남은 할 일</div>
+          <div class="value" id="statRemain">0</div>
+        </article>
+        <article class="stat">
+          <div class="label">완료율</div>
+          <div class="value" id="statDoneRate">0%</div>
+        </article>
+        <article class="stat">
+          <div class="label">Top3 지정</div>
+          <div class="value" id="statTop">-</div>
+        </article>
+        <article class="stat">
+          <div class="label">루틴 달성</div>
+          <div class="value" id="statRoutine">0/0</div>
+        </article>
+      </div>
+    </section>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">대시보드</button>
+      <button class="tab-btn" data-tab="calendar">캘린더·월간 리포트</button>
+      <button class="tab-btn" data-tab="annual">연간 보기</button>
+    </div>
+
+    <section class="date-hub">
+      <div>
+        <div class="label">기록 기준일</div>
+        <div class="value" id="activeDateText">0000.00.00</div>
+      </div>
+      <label class="date-picker-trigger" aria-label="기록 기준일 선택">
+        📅
+        <input type="date" id="globalDatePicker" />
+      </label>
+    </section>
+
+    <section class="tab-panel active" id="panel-dashboard">
+      <section class="layout split-layout">
+        <div class="column work-column">
+          <article class="card work-card" style="animation-delay: 0.05s">
+            <div class="title-row">
+              <div>
+                <h2>Todo List</h2>
+                <p class="sub">프로젝트 태그로 분류하고, 중요한 Top3를 지정해 집중하세요.</p>
+              </div>
+            </div>
+
+            <div class="work-top">
+              <strong>Top 3 Priorities</strong>
+              <div id="topTaskText">아직 지정된 핵심 업무가 없습니다.</div>
+            </div>
+
+            <div class="input-zone">
+              <p class="sub"><strong>할 일 빠른 추가</strong> 텍스트 입력 후 추가하면 바로 기록됩니다.</p>
+              <div class="quick-add">
+                <input type="text" id="todoInput" placeholder="예: 클라이언트 제안서 수정" />
+                <select id="todoTagSelect" aria-label="프로젝트 태그 선택"></select>
+                <button class="btn main" id="addTodoBtn">추가</button>
+              </div>
+              <div class="quick-task-row" id="quickTaskRow">
+                <button class="quick-task-btn" data-template="메일 확인/답변">메일 확인/답변</button>
+                <button class="quick-task-btn" data-template="핵심 보고서 1건">핵심 보고서 1건</button>
+                <button class="quick-task-btn" data-template="팀 커뮤니케이션 정리">팀 커뮤니케이션 정리</button>
+              </div>
+            </div>
+            <details class="tag-manager">
+              <summary>선택 설정: 프로젝트 태그 관리</summary>
+              <div class="tag-manager-body">
+                <p class="sub">필요할 때만 열어 태그를 관리하세요.</p>
+                <div class="tag-manager-head">
+                  <input type="text" id="tagInput" placeholder="태그 추가 (예: Sales, Dev, Ops)" />
+                  <button class="btn main" id="addTagBtn">추가</button>
+                </div>
+                <div class="tag-list" id="tagList"></div>
+              </div>
+            </details>
+
+            <div class="chip-group" id="filterChips">
+              <button class="chip active" data-filter="all">전체</button>
+              <button class="chip" data-filter="open">진행중</button>
+              <button class="chip" data-filter="done">완료</button>
+            </div>
+            <div class="chip-group project-filter" id="projectFilterChips"></div>
+
+            <div class="todo-list" id="todoList"></div>
+          </article>
+
+          <article class="card work-card" style="animation-delay: 0.1s">
+            <div class="title-row">
+              <div>
+                <h3>Daily Journal</h3>
+                <p class="sub">안 쓰는 날도 스티커 클릭만으로 발자취를 남길 수 있어요.</p>
+              </div>
+            </div>
+            <div class="sticker-wrap" id="journalSticker">
+              <button class="sticker-btn" data-sticker="🔥 몰입">🔥 몰입</button>
+              <button class="sticker-btn" data-sticker="🙂 안정">🙂 안정</button>
+              <button class="sticker-btn" data-sticker="😵 과부하">😵 과부하</button>
+              <button class="sticker-btn" data-sticker="🌿 회복">🌿 회복</button>
+              <button class="sticker-btn" data-sticker="🏖 휴식">🏖 휴식</button>
+            </div>
+            <textarea id="journalBody" placeholder="회고: 무엇이 잘 됐고, 무엇을 개선할지"></textarea>
+          </article>
+        </div>
+
+        <div class="column life-column">
+          <article class="card life-card" style="animation-delay: 0.15s">
+            <div class="title-row">
+              <div>
+                <h3>개인 Habit Tracker</h3>
+                <p class="sub">루틴 항목 편집 + 연속 달성(streak)을 확인하세요.</p>
+              </div>
+            </div>
+            <div class="routine-list" id="routineList"></div>
+            <div class="routine-add">
+              <input type="text" id="routineInput" placeholder="새 루틴 추가 (예: 물 2L)" />
+              <button class="btn main" id="addRoutineBtn">추가</button>
+            </div>
+            <div class="routine-template-row" id="routineTemplateRow">
+              <button class="routine-template-btn" data-routines="물 2L|스트레칭 5분|가벼운 정리">아침 템플릿</button>
+              <button class="routine-template-btn" data-routines="산책 20분|비타민 챙기기|저녁 회고">저녁 템플릿</button>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-bar" id="routineBar"></div>
+            </div>
+            <p class="tagline" id="routineText">오늘 루틴 달성률 0%</p>
+          </article>
+
+          <article class="card life-card">
+            <div class="title-row">
+              <div>
+                <h3>Quick Notes</h3>
+                <p class="sub">개인 메모와 아이디어를 저장합니다.</p>
+              </div>
+            </div>
+            <textarea id="quickNotes" style="min-height: 180px;" placeholder="메모, 아이디어, 다음 액션"></textarea>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="panel-calendar">
+      <section class="calendar-layout">
+        <article class="card work-card">
+          <div class="calendar-head">
+            <div>
+              <h3 style="margin:0;">월간 캘린더</h3>
+              <p class="sub">날짜를 누르면 해당 일자 할 일을 확인하고 월간 리포트를 함께 볼 수 있습니다.</p>
+            </div>
+            <input type="month" id="calendarMonth" aria-label="캘린더 월 선택" />
+          </div>
+          <div class="weekday-row" id="weekdayRow"></div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </article>
+
+        <aside class="aside">
+          <article class="card life-card">
+            <div class="title-row">
+              <div>
+                <h3>월간 리포트</h3>
+                <p class="sub" id="monthRangeText">선택 월 기준 월간 집계</p>
+              </div>
+            </div>
+            <div class="report-split">
+              <div class="report-block work">
+                <h4>Work (업무)</h4>
+                <div class="week-kpis">
+                  <div class="week-kpi"><span>할 일 완료율</span><strong id="monthTodoRate">0%</strong></div>
+                  <div class="week-kpi"><span>완료 / 총계</span><strong id="monthTodoCount">0 / 0</strong></div>
+                  <div class="week-kpi"><span>저널/스티커 기록일</span><strong id="monthWorkDays">0일</strong></div>
+                </div>
+              </div>
+              <div class="report-block life">
+                <h4>Life (루틴)</h4>
+                <div class="week-kpis">
+                  <div class="week-kpi"><span>루틴 평균 달성</span><strong id="monthRoutineAvg">0%</strong></div>
+                  <div class="week-kpi"><span>루틴 기록일</span><strong id="monthRoutineDays">0일</strong></div>
+                  <div class="week-kpi"><span>최고 streak</span><strong id="monthBestStreak">0d</strong></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="card work-card">
+            <div class="title-row">
+              <div>
+                <h3 id="dayTaskTitle">선택 날짜 할 일</h3>
+                <p class="sub">여기서 본 날짜는 대시보드와 같은 데이터입니다.</p>
+              </div>
+            </div>
+            <div class="day-task-list" id="dayTaskList"></div>
+          </article>
+        </aside>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="panel-annual">
+      <section class="annual-layout">
+        <article class="card work-card">
+          <div class="annual-head">
+            <div>
+              <h3 style="margin:0;">연간 한눈에 보기</h3>
+              <p class="sub">월별 업무/루틴 흐름을 빠르게 점검하세요.</p>
+            </div>
+            <input type="number" id="annualYear" min="2000" max="2100" step="1" />
+          </div>
+          <div class="annual-grid" id="annualGrid"></div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "focus-ledger-v2";
+    const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+
+    const defaultRoutines = [
+      { id: "r1", name: "아침 플래닝", done: false },
+      { id: "r2", name: "30분 운동", done: false },
+      { id: "r3", name: "집중 독서 20분", done: false },
+      { id: "r4", name: "저녁 회고", done: false }
+    ];
+
+    function todayKey() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function thisMonthKey() {
+      return todayKey().slice(0, 7);
+    }
+
+    const state = {
+      activeTab: "dashboard",
+      todos: [],
+      filter: "all",
+      projectFilter: "all",
+      selectedDate: todayKey(),
+      calendarMonth: thisMonthKey(),
+      annualYear: new Date().getFullYear(),
+      projectTags: ["General", "Sales", "Dev", "Ops"],
+      quickNotes: "",
+      routines: defaultRoutines.map((r) => ({ ...r })),
+      routineLogs: {},
+      dailyLogs: {},
+      journals: {}
+    };
+
+    const el = {
+      tabButtons: [...document.querySelectorAll(".tab-btn")],
+      tabPanels: [...document.querySelectorAll(".tab-panel")],
+      activeDateText: document.getElementById("activeDateText"),
+      globalDatePicker: document.getElementById("globalDatePicker"),
+      todoInput: document.getElementById("todoInput"),
+      todoTagSelect: document.getElementById("todoTagSelect"),
+      topTaskText: document.getElementById("topTaskText"),
+      addTodoBtn: document.getElementById("addTodoBtn"),
+      quickTaskRow: document.getElementById("quickTaskRow"),
+      tagInput: document.getElementById("tagInput"),
+      addTagBtn: document.getElementById("addTagBtn"),
+      tagList: document.getElementById("tagList"),
+      todoList: document.getElementById("todoList"),
+      filterChips: document.getElementById("filterChips"),
+      projectFilterChips: document.getElementById("projectFilterChips"),
+      journalSticker: document.getElementById("journalSticker"),
+      journalBody: document.getElementById("journalBody"),
+      quickNotes: document.getElementById("quickNotes"),
+      routineList: document.getElementById("routineList"),
+      routineInput: document.getElementById("routineInput"),
+      addRoutineBtn: document.getElementById("addRoutineBtn"),
+      routineTemplateRow: document.getElementById("routineTemplateRow"),
+      routineBar: document.getElementById("routineBar"),
+      routineText: document.getElementById("routineText"),
+      statRemain: document.getElementById("statRemain"),
+      statDoneRate: document.getElementById("statDoneRate"),
+      statTop: document.getElementById("statTop"),
+      statRoutine: document.getElementById("statRoutine"),
+      exportBtn: document.getElementById("exportBtn"),
+      importBtn: document.getElementById("importBtn"),
+      importFile: document.getElementById("importFile"),
+      calendarMonth: document.getElementById("calendarMonth"),
+      weekdayRow: document.getElementById("weekdayRow"),
+      calendarGrid: document.getElementById("calendarGrid"),
+      annualYear: document.getElementById("annualYear"),
+      annualGrid: document.getElementById("annualGrid"),
+      monthRangeText: document.getElementById("monthRangeText"),
+      monthTodoRate: document.getElementById("monthTodoRate"),
+      monthTodoCount: document.getElementById("monthTodoCount"),
+      monthWorkDays: document.getElementById("monthWorkDays"),
+      monthRoutineAvg: document.getElementById("monthRoutineAvg"),
+      monthRoutineDays: document.getElementById("monthRoutineDays"),
+      monthBestStreak: document.getElementById("monthBestStreak"),
+      dayTaskTitle: document.getElementById("dayTaskTitle"),
+      dayTaskList: document.getElementById("dayTaskList")
+    };
+
+    function emptyJournal() {
+      return {
+        sticker: "",
+        journalBody: ""
+      };
+    }
+
+    function getJournalForDate(dKey) {
+      const current = state.journals[dKey];
+      return { ...emptyJournal(), ...(current && typeof current === "object" ? current : {}) };
+    }
+
+    function saveJournalField(key, value) {
+      const dKey = state.selectedDate;
+      const journal = getJournalForDate(dKey);
+      journal[key] = value;
+      state.journals[dKey] = journal;
+    }
+
+    function refreshDailyLogForSelectedDate() {
+      const dKey = state.selectedDate;
+      const journal = getJournalForDate(dKey);
+      const routineTotal = state.routines.length;
+      const routineDone = state.routines.filter((r) => r.done).length;
+      state.dailyLogs[dKey] = {
+        workLogged: Boolean((journal.journalBody || "").trim() || journal.sticker),
+        routineRate: routineTotal ? Math.round((routineDone / routineTotal) * 100) : 0
+      };
+    }
+
+    function save() {
+      persistRoutinesForSelectedDate();
+      refreshDailyLogForSelectedDate();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      if (el.annualGrid) renderAnnualOverview();
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return;
+
+        state.activeTab = parsed.activeTab || "dashboard";
+        state.todos = Array.isArray(parsed.todos) ? parsed.todos : [];
+        state.filter = ["all", "open", "done"].includes(parsed.filter) ? parsed.filter : "all";
+        state.projectFilter = parsed.projectFilter || "all";
+        state.selectedDate = parsed.selectedDate || todayKey();
+        state.calendarMonth = parsed.calendarMonth || thisMonthKey();
+        state.annualYear = Number(parsed.annualYear) || new Date(state.selectedDate).getFullYear();
+        state.projectTags = Array.isArray(parsed.projectTags) && parsed.projectTags.length ? parsed.projectTags : ["General", "Sales", "Dev", "Ops"];
+        state.quickNotes = parsed.quickNotes || "";
+        state.routines = Array.isArray(parsed.routines) && parsed.routines.length
+          ? parsed.routines
+          : defaultRoutines.map((r) => ({ ...r }));
+        state.routineLogs = parsed.routineLogs && typeof parsed.routineLogs === "object" ? parsed.routineLogs : {};
+        state.dailyLogs = parsed.dailyLogs && typeof parsed.dailyLogs === "object" ? parsed.dailyLogs : {};
+        state.journals = parsed.journals && typeof parsed.journals === "object" ? parsed.journals : {};
+        normalizeTags();
+        normalizeTodos();
+        syncRoutinesFromSelectedDate();
+
+        const legacyExists = parsed.journalWork || parsed.journalBody || parsed.winOfDay;
+        if (legacyExists && !state.journals[todayKey()]) {
+          state.journals[todayKey()] = {
+            sticker: "",
+            journalBody: parsed.journalBody || parsed.journalWork || parsed.winOfDay || ""
+          };
+        }
+      } catch (err) {
+        console.warn("저장 데이터 로드 실패", err);
+      }
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function normalizeTodos() {
+      state.todos = state.todos.map((t) => ({
+        ...t,
+        dueDate: t.dueDate || state.selectedDate,
+        tag: t.tag || (state.projectTags[0] || "General"),
+        topOrder: Number.isInteger(t.topOrder) ? t.topOrder : 0,
+        isTop: false
+      }));
+      recomputeTopFlags();
+    }
+
+    function normalizeTags() {
+      const seen = new Set();
+      state.projectTags = state.projectTags
+        .map((t) => String(t || "").trim())
+        .filter((t) => t && !seen.has(t) && seen.add(t));
+      if (!state.projectTags.length) state.projectTags = ["General"];
+    }
+
+    function recomputeTopFlags() {
+      const grouped = {};
+      state.todos.forEach((t) => {
+        if (!grouped[t.dueDate]) grouped[t.dueDate] = [];
+        grouped[t.dueDate].push(t);
+      });
+      Object.values(grouped).forEach((list) => {
+        list.sort((a, b) => (a.topOrder || 0) - (b.topOrder || 0));
+        let order = 1;
+        list.forEach((t) => {
+          if (t.topOrder > 0 && order <= 3) {
+            t.topOrder = order;
+            t.isTop = true;
+            order += 1;
+          } else {
+            t.topOrder = 0;
+            t.isTop = false;
+          }
+        });
+      });
+    }
+
+    function syncRoutinesFromSelectedDate() {
+      const day = state.routineLogs[state.selectedDate] || {};
+      state.routines.forEach((r) => {
+        r.done = Boolean(day[r.id]);
+      });
+    }
+
+    function persistRoutinesForSelectedDate() {
+      if (!state.routineLogs[state.selectedDate]) state.routineLogs[state.selectedDate] = {};
+      state.routines.forEach((r) => {
+        state.routineLogs[state.selectedDate][r.id] = Boolean(r.done);
+      });
+    }
+
+    function getRoutineStreak(rid) {
+      let streak = 0;
+      const cursor = new Date(`${state.selectedDate}T00:00:00`);
+      while (true) {
+        const key = dateKey(cursor);
+        const done = Boolean(state.routineLogs[key] && state.routineLogs[key][rid]);
+        if (!done) break;
+        streak += 1;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      return streak;
+    }
+
+    function renderTagOptions() {
+      el.todoTagSelect.innerHTML = state.projectTags.map((t) => `<option value="${escapeHTML(t)}">${escapeHTML(t)}</option>`).join("");
+    }
+
+    function renderTagList() {
+      el.tagList.innerHTML = state.projectTags.map((t) => `
+        <span class="tag-pill">
+          ${escapeHTML(t)}
+          <button type="button" data-del-tag="${escapeHTML(t)}">x</button>
+        </span>
+      `).join("");
+    }
+
+    function renderProjectFilters() {
+      const chips = ['<button class="project-chip" data-project-filter="all">태그 전체</button>']
+        .concat(state.projectTags.map((tag) => `<button class="project-chip" data-project-filter="${escapeHTML(tag)}">${escapeHTML(tag)}</button>`));
+      el.projectFilterChips.innerHTML = chips.join("");
+      [...el.projectFilterChips.querySelectorAll(".project-chip")].forEach((chip) => {
+        chip.classList.toggle("active", chip.dataset.projectFilter === state.projectFilter);
+      });
+    }
+
+    function setActiveTab(tab, persist = true) {
+      state.activeTab = tab;
+      el.tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === tab));
+      el.tabPanels.forEach((panel) => panel.classList.toggle("active", panel.id === `panel-${tab}`));
+      if (persist) save();
+    }
+
+    function renderTodos() {
+      const scoped = state.todos.filter((t) => t.dueDate === state.selectedDate);
+      let filtered = scoped;
+      if (state.filter === "open") filtered = scoped.filter((t) => !t.done);
+      if (state.filter === "done") filtered = scoped.filter((t) => t.done);
+      if (state.projectFilter !== "all") filtered = filtered.filter((t) => t.tag === state.projectFilter);
+
+      if (!filtered.length) {
+        el.todoList.innerHTML = '<div class="sub">표시할 할 일이 없습니다.</div>';
+        renderTopTask();
+        updateStats();
+        return;
+      }
+
+      el.todoList.innerHTML = filtered.map((todo) => {
+        const tagHtml = todo.tag ? `<span class="project-tag">${escapeHTML(todo.tag)}</span>` : "";
+        const topHtml = todo.topOrder > 0 ? `<span class="top-rank">Top${todo.topOrder}</span>` : "";
+        return `
+          <article class="todo-item ${todo.done ? "done" : ""}" data-id="${todo.id}" draggable="true">
+            <span class="drag-handle" title="드래그 정렬">::</span>
+            <input type="checkbox" ${todo.done ? "checked" : ""} aria-label="todo 완료" data-action="toggle">
+            <div>
+              <div class="todo-title">${escapeHTML(todo.text)}</div>
+              <div class="todo-meta">
+                ${tagHtml}
+                <span class="due">${todo.dueDate}</span>
+                ${topHtml}
+              </div>
+            </div>
+            <div class="todo-actions">
+              <button class="mini-btn ${todo.isTop ? "top-active" : ""}" data-action="top">${todo.isTop ? "해제" : "Top3"}</button>
+              <button class="mini-btn" data-action="delete">삭제</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      renderTopTask();
+      updateStats();
+      bindTodoDragEvents();
+    }
+
+    function renderTopTask() {
+      const tops = state.todos
+        .filter((t) => t.dueDate === state.selectedDate && t.topOrder > 0)
+        .sort((a, b) => a.topOrder - b.topOrder);
+      if (!tops.length) {
+        el.topTaskText.textContent = "아직 지정된 핵심 업무가 없습니다.";
+        return;
+      }
+      el.topTaskText.innerHTML = tops.map((t) => `Top${t.topOrder}. ${escapeHTML(t.text)}`).join("<br>");
+    }
+
+    function updateStats() {
+      const dayTodos = state.todos.filter((t) => t.dueDate === state.selectedDate);
+      const total = dayTodos.length;
+      const done = dayTodos.filter((t) => t.done).length;
+      const remain = total - done;
+      const doneRate = total ? Math.round((done / total) * 100) : 0;
+
+      const topCount = dayTodos.filter((t) => t.topOrder > 0).length;
+      const routineTotal = state.routines.length;
+      const routineDone = state.routines.filter((r) => r.done).length;
+
+      el.statRemain.textContent = String(remain);
+      el.statDoneRate.textContent = `${doneRate}%`;
+      el.statTop.textContent = `${topCount}/3`;
+      el.statRoutine.textContent = `${routineDone}/${routineTotal}`;
+    }
+
+    function renderRoutines() {
+      syncRoutinesFromSelectedDate();
+      const total = state.routines.length;
+      const done = state.routines.filter((r) => r.done).length;
+      const ratio = total ? Math.round((done / total) * 100) : 0;
+
+      el.routineList.innerHTML = state.routines.map((r) => `
+        <div class="routine-item" data-rid="${r.id}">
+          <div>
+            <span class="streak-badge">${getRoutineStreak(r.id)}d streak</span>
+            <input class="routine-name" type="text" value="${escapeHTML(r.name)}" aria-label="루틴 이름">
+          </div>
+          <div class="routine-actions">
+            <input type="checkbox" data-rid="${r.id}" ${r.done ? "checked" : ""} aria-label="${escapeHTML(r.name)} 완료">
+            <button class="mini-btn" data-delete-routine="${r.id}">삭제</button>
+          </div>
+        </div>
+      `).join("");
+
+      el.routineBar.style.width = `${ratio}%`;
+      el.routineText.textContent = `오늘 루틴 달성률 ${ratio}%`;
+      updateStats();
+    }
+
+    function syncInputs() {
+      const journal = getJournalForDate(state.selectedDate);
+      el.globalDatePicker.value = state.selectedDate;
+      el.activeDateText.textContent = formatDateDot(state.selectedDate);
+      el.journalBody.value = journal.journalBody;
+      renderTagOptions();
+      renderTagList();
+      renderProjectFilters();
+      el.quickNotes.value = state.quickNotes;
+      el.calendarMonth.value = state.calendarMonth;
+      el.annualYear.value = String(state.annualYear);
+
+      [...el.filterChips.querySelectorAll(".chip")].forEach((chip) => {
+        chip.classList.toggle("active", chip.dataset.filter === state.filter);
+      });
+
+      setActiveTab(state.activeTab || "dashboard", false);
+
+      [...el.journalSticker.querySelectorAll(".sticker-btn")].forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.sticker === journal.sticker);
+      });
+    }
+
+    function addTodo() {
+      const text = el.todoInput.value.trim();
+      if (!text) return;
+
+      const dueDate = state.selectedDate || todayKey();
+      state.todos.unshift({
+        id: `${Date.now()}-${Math.random().toString(16).slice(2, 7)}`,
+        text,
+        tag: el.todoTagSelect.value || state.projectTags[0] || "General",
+        priority: "mid",
+        dueDate,
+        topOrder: 0,
+        isTop: false,
+        done: false
+      });
+
+      el.todoInput.value = "";
+      save();
+      renderTodos();
+      renderCalendar();
+      renderSelectedDayTasks();
+      renderMonthlyReport();
+    }
+
+    function addTodoByTemplate(text) {
+      const value = String(text || "").trim();
+      if (!value) return;
+      state.todos.unshift({
+        id: `${Date.now()}-${Math.random().toString(16).slice(2, 7)}`,
+        text: value,
+        tag: el.todoTagSelect.value || state.projectTags[0] || "General",
+        priority: "mid",
+        dueDate: state.selectedDate,
+        topOrder: 0,
+        isTop: false,
+        done: false
+      });
+      save();
+      renderTodos();
+      renderCalendar();
+      renderSelectedDayTasks();
+      renderMonthlyReport();
+    }
+
+    function addRoutine() {
+      const name = el.routineInput.value.trim();
+      if (!name) return;
+      state.routines.push({
+        id: `r-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
+        name,
+        done: false
+      });
+      el.routineInput.value = "";
+      save();
+      renderRoutines();
+      renderMonthlyReport();
+    }
+
+    function addRoutineTemplate(raw) {
+      const items = String(raw || "")
+        .split("|")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (!items.length) return;
+      const names = new Set(state.routines.map((r) => r.name));
+      items.forEach((name) => {
+        if (names.has(name)) return;
+        state.routines.push({
+          id: `r-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
+          name,
+          done: false
+        });
+        names.add(name);
+      });
+      save();
+      renderRoutines();
+      renderMonthlyReport();
+    }
+
+    function formatDateDot(dateKey) {
+      if (!dateKey) return "";
+      const [y, m, d] = dateKey.split("-");
+      return `${y}.${m}.${d}`;
+    }
+
+    function startOfWeek(dateObj) {
+      const d = new Date(dateObj);
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() - d.getDay());
+      return d;
+    }
+
+    function dateKey(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function renderWeekdayRow() {
+      el.weekdayRow.innerHTML = WEEK_LABELS.map((d) => `<div class="weekday">${d}</div>`).join("");
+    }
+
+    function getDayCountSummary(dKey) {
+      const dayTodos = state.todos.filter((t) => t.dueDate === dKey);
+      const total = dayTodos.length;
+      const done = dayTodos.filter((t) => t.done).length;
+      return { total, done };
+    }
+
+    function renderCalendar() {
+      const [year, month] = state.calendarMonth.split("-").map(Number);
+      const first = new Date(year, month - 1, 1);
+      const lastDay = new Date(year, month, 0).getDate();
+      const startWeekday = first.getDay();
+      const cells = [];
+
+      for (let i = 0; i < startWeekday; i++) {
+        cells.push('<div class="day-cell muted"></div>');
+      }
+
+      for (let day = 1; day <= lastDay; day++) {
+        const dKey = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const summary = getDayCountSummary(dKey);
+        const isToday = dKey === todayKey();
+        const isSelected = dKey === state.selectedDate;
+
+        const summaryText = summary.total ? `<span class="day-summary">${summary.done}/${summary.total} 완료</span>` : "";
+        cells.push(`
+          <button class="day-cell ${isToday ? "today" : ""} ${isSelected ? "selected" : ""}" data-date="${dKey}">
+            <span class="day-num">${day}</span>
+            ${summaryText}
+          </button>
+        `);
+      }
+
+      el.calendarGrid.innerHTML = cells.join("");
+    }
+
+    function renderSelectedDayTasks() {
+      const dKey = state.selectedDate;
+      const dayTodos = state.todos.filter((t) => t.dueDate === dKey);
+      const journal = getJournalForDate(dKey);
+      el.dayTaskTitle.textContent = `${formatDateDot(dKey)} 할 일`;
+
+      if (!dayTodos.length) {
+        const trail = journal.sticker ? `<div class="day-task">오늘의 스티커: ${escapeHTML(journal.sticker)}</div>` : "";
+        el.dayTaskList.innerHTML = `${trail}<div class="sub">해당 날짜의 할 일이 없습니다.</div>`;
+        return;
+      }
+
+      const stickerHtml = journal.sticker ? `<div class="day-task">오늘의 스티커: ${escapeHTML(journal.sticker)}</div>` : "";
+      el.dayTaskList.innerHTML = stickerHtml + dayTodos.map((todo) => {
+        const status = todo.done ? "완료" : "진행중";
+        return `<div class="day-task">[${status}] ${escapeHTML(todo.text)}</div>`;
+      }).join("");
+    }
+
+    function renderMonthlyReport() {
+      const [year, month] = state.calendarMonth.split("-").map(Number);
+      const monthPrefix = `${year}-${String(month).padStart(2, "0")}-`;
+      const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
+      const monthEnd = `${year}-${String(month).padStart(2, "0")}-${String(new Date(year, month, 0).getDate()).padStart(2, "0")}`;
+
+      const monthTodos = state.todos.filter((t) => t.dueDate && t.dueDate.startsWith(monthPrefix));
+      const todoTotal = monthTodos.length;
+      const todoDone = monthTodos.filter((t) => t.done).length;
+      const todoRate = todoTotal ? Math.round((todoDone / todoTotal) * 100) : 0;
+
+      const monthLogKeys = Object.keys(state.dailyLogs).filter((k) => k.startsWith(monthPrefix));
+      const workLoggedDays = monthLogKeys.filter((k) => Boolean(state.dailyLogs[k] && state.dailyLogs[k].workLogged)).length;
+
+      const monthRoutineEntries = Object.entries(state.routineLogs).filter(([k]) => k.startsWith(monthPrefix));
+      const routineLoggedDays = monthRoutineEntries.filter(([, day]) => Object.values(day || {}).some(Boolean)).length;
+
+      const routineRates = monthRoutineEntries
+        .filter(([, day]) => Object.values(day || {}).some(Boolean))
+        .map(([, day]) => {
+          const total = state.routines.length || 1;
+          const done = Object.values(day || {}).filter(Boolean).length;
+          return Math.round((done / total) * 100);
+        });
+      const routineAvg = routineRates.length ? Math.round(routineRates.reduce((a, b) => a + b, 0) / routineRates.length) : 0;
+
+      let bestStreak = 0;
+      state.routines.forEach((r) => {
+        bestStreak = Math.max(bestStreak, getRoutineStreak(r.id));
+      });
+
+      el.monthRangeText.textContent = `${formatDateDot(monthStart)} ~ ${formatDateDot(monthEnd)}`;
+      el.monthTodoRate.textContent = `${todoRate}%`;
+      el.monthTodoCount.textContent = `${todoDone} / ${todoTotal}`;
+      el.monthWorkDays.textContent = `${workLoggedDays}일`;
+      el.monthRoutineAvg.textContent = `${routineAvg}%`;
+      el.monthRoutineDays.textContent = `${routineLoggedDays}일`;
+      el.monthBestStreak.textContent = `${bestStreak}d`;
+    }
+
+    function renderAnnualOverview() {
+      const year = Number(state.annualYear) || new Date(state.selectedDate).getFullYear();
+      const monthLabels = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+      let html = "";
+      for (let m = 1; m <= 12; m++) {
+        const mm = String(m).padStart(2, "0");
+        const prefix = `${year}-${mm}-`;
+        const monthTodos = state.todos.filter((t) => t.dueDate && t.dueDate.startsWith(prefix));
+        const total = monthTodos.length;
+        const done = monthTodos.filter((t) => t.done).length;
+        const todoRate = total ? Math.round((done / total) * 100) : 0;
+
+        const logKeys = Object.keys(state.dailyLogs).filter((k) => k.startsWith(prefix));
+        const routineDays = logKeys.length;
+        const routineAvg = routineDays
+          ? Math.round(logKeys.reduce((acc, k) => acc + (state.dailyLogs[k].routineRate || 0), 0) / routineDays)
+          : 0;
+        const workDays = logKeys.filter((k) => Boolean(state.dailyLogs[k].workLogged)).length;
+
+        html += `
+          <article class="annual-card" data-annual-month="${year}-${mm}">
+            <h4>${monthLabels[m - 1]}</h4>
+            <div class="annual-kpi">
+              <span>업무 완료율 <strong>${todoRate}%</strong></span>
+              <span>완료 / 총계 <strong>${done} / ${total}</strong></span>
+              <span>업무 기록일 <strong>${workDays}일</strong></span>
+              <span>루틴 평균 <strong>${routineAvg}%</strong></span>
+            </div>
+          </article>
+        `;
+      }
+      el.annualGrid.innerHTML = html;
+    }
+
+    function bindTodoDragEvents() {
+      const items = [...el.todoList.querySelectorAll(".todo-item[data-id]")];
+      let draggedId = "";
+
+      items.forEach((item) => {
+        item.addEventListener("dragstart", () => {
+          draggedId = item.dataset.id;
+          item.classList.add("dragging");
+        });
+
+        item.addEventListener("dragend", () => {
+          item.classList.remove("dragging");
+        });
+
+        item.addEventListener("dragover", (e) => {
+          e.preventDefault();
+        });
+
+        item.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const targetId = item.dataset.id;
+          if (!draggedId || draggedId === targetId) return;
+
+          const from = state.todos.findIndex((t) => t.id === draggedId);
+          const to = state.todos.findIndex((t) => t.id === targetId);
+          if (from === -1 || to === -1) return;
+
+          const [moved] = state.todos.splice(from, 1);
+          state.todos.splice(to, 0, moved);
+          save();
+          renderTodos();
+        });
+      });
+    }
+
+    function exportData() {
+      const payload = {
+        version: 2,
+        exportedAt: new Date().toISOString(),
+        data: state
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "focus-ledger-backup.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          const incoming = parsed && parsed.data ? parsed.data : parsed;
+          if (!incoming || typeof incoming !== "object") return;
+
+          state.activeTab = incoming.activeTab || "dashboard";
+          state.todos = Array.isArray(incoming.todos) ? incoming.todos : [];
+          state.filter = ["all", "open", "done"].includes(incoming.filter) ? incoming.filter : "all";
+          state.projectFilter = incoming.projectFilter || "all";
+          state.selectedDate = incoming.selectedDate || todayKey();
+          state.calendarMonth = incoming.calendarMonth || state.selectedDate.slice(0, 7);
+          state.annualYear = Number(incoming.annualYear) || new Date(state.selectedDate).getFullYear();
+          state.projectTags = Array.isArray(incoming.projectTags) && incoming.projectTags.length ? incoming.projectTags : ["General", "Sales", "Dev", "Ops"];
+          state.quickNotes = incoming.quickNotes || "";
+          state.routines = Array.isArray(incoming.routines) && incoming.routines.length
+            ? incoming.routines
+            : defaultRoutines.map((r) => ({ ...r }));
+          state.routineLogs = incoming.routineLogs && typeof incoming.routineLogs === "object" ? incoming.routineLogs : {};
+          state.dailyLogs = incoming.dailyLogs && typeof incoming.dailyLogs === "object" ? incoming.dailyLogs : {};
+          state.journals = incoming.journals && typeof incoming.journals === "object" ? incoming.journals : {};
+          normalizeTags();
+          normalizeTodos();
+          syncRoutinesFromSelectedDate();
+
+          save();
+          syncInputs();
+          renderTodos();
+          renderRoutines();
+          renderCalendar();
+          renderSelectedDayTasks();
+          renderMonthlyReport();
+        } catch (err) {
+          alert("가져오기 실패: JSON 파일 형식을 확인해 주세요.");
+          console.warn(err);
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    }
+
+    function bindEvents() {
+      el.tabButtons.forEach((btn) => {
+        btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+      });
+
+      el.addTodoBtn.addEventListener("click", addTodo);
+      el.todoInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          addTodo();
+        }
+      });
+      el.quickTaskRow.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-template]");
+        if (!btn) return;
+        addTodoByTemplate(btn.dataset.template);
+      });
+
+      el.addTagBtn.addEventListener("click", () => {
+        const tag = (el.tagInput.value || "").trim();
+        if (!tag) return;
+        if (!state.projectTags.includes(tag)) {
+          state.projectTags.push(tag);
+          save();
+          renderTagOptions();
+          renderTagList();
+          el.todoTagSelect.value = tag;
+        }
+        el.tagInput.value = "";
+      });
+
+      el.tagInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          el.addTagBtn.click();
+        }
+      });
+
+      el.tagList.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-del-tag]");
+        if (!btn) return;
+        const tag = btn.dataset.delTag;
+        if (state.projectTags.length <= 1) return;
+        state.projectTags = state.projectTags.filter((t) => t !== tag);
+        if (state.projectFilter === tag) state.projectFilter = "all";
+        state.todos = state.todos.map((todo) => ({
+          ...todo,
+          tag: todo.tag === tag ? state.projectTags[0] : todo.tag
+        }));
+        save();
+        renderTagOptions();
+        renderTagList();
+        renderTodos();
+        renderCalendar();
+        renderMonthlyReport();
+      });
+
+      el.globalDatePicker.addEventListener("change", () => {
+        if (!el.globalDatePicker.value) return;
+        state.selectedDate = el.globalDatePicker.value;
+        state.calendarMonth = state.selectedDate.slice(0, 7);
+        syncRoutinesFromSelectedDate();
+        save();
+        syncInputs();
+        renderTodos();
+        renderRoutines();
+        renderCalendar();
+        renderSelectedDayTasks();
+        renderMonthlyReport();
+      });
+
+      el.todoList.addEventListener("click", (e) => {
+        const actionEl = e.target.closest("[data-action]");
+        if (!actionEl) return;
+
+        const item = e.target.closest(".todo-item");
+        if (!item) return;
+        const id = item.dataset.id;
+        const idx = state.todos.findIndex((t) => t.id === id);
+        if (idx === -1) return;
+
+        if (actionEl.dataset.action === "delete") {
+          const deleted = state.todos[idx];
+          state.todos.splice(idx, 1);
+          state.todos
+            .filter((t) => t.dueDate === deleted.dueDate && t.topOrder > 0)
+            .sort((a, b) => a.topOrder - b.topOrder)
+            .forEach((t, i) => { t.topOrder = i + 1; t.isTop = true; });
+          save();
+          renderTodos();
+          renderCalendar();
+          renderSelectedDayTasks();
+          renderMonthlyReport();
+          return;
+        }
+
+        if (actionEl.dataset.action === "top") {
+          const targetTodo = state.todos[idx];
+          const inDay = state.todos
+            .filter((t) => t.dueDate === targetTodo.dueDate && t.topOrder > 0)
+            .sort((a, b) => a.topOrder - b.topOrder);
+          if (targetTodo.topOrder > 0) {
+            targetTodo.topOrder = 0;
+            targetTodo.isTop = false;
+            inDay
+              .filter((t) => t !== targetTodo)
+              .forEach((t, i) => { t.topOrder = i + 1; t.isTop = true; });
+          } else {
+            if (inDay.length >= 3) {
+              alert("Top3는 최대 3개까지 지정할 수 있어요.");
+              return;
+            }
+            targetTodo.topOrder = inDay.length + 1;
+            targetTodo.isTop = true;
+          }
+          save();
+          renderTodos();
+          renderCalendar();
+          renderSelectedDayTasks();
+          renderMonthlyReport();
+        }
+      });
+
+      el.todoList.addEventListener("change", (e) => {
+        const actionEl = e.target.closest("[data-action='toggle']");
+        if (!actionEl) return;
+        const item = e.target.closest(".todo-item");
+        if (!item) return;
+
+        const todo = state.todos.find((t) => t.id === item.dataset.id);
+        if (!todo) return;
+        todo.done = actionEl.checked;
+        save();
+        renderTodos();
+        renderCalendar();
+        renderSelectedDayTasks();
+        renderMonthlyReport();
+      });
+
+      el.filterChips.addEventListener("click", (e) => {
+        const chip = e.target.closest(".chip");
+        if (!chip) return;
+        state.filter = chip.dataset.filter;
+        save();
+        syncInputs();
+        renderTodos();
+      });
+
+      el.projectFilterChips.addEventListener("click", (e) => {
+        const chip = e.target.closest("[data-project-filter]");
+        if (!chip) return;
+        state.projectFilter = chip.dataset.projectFilter;
+        save();
+        renderProjectFilters();
+        renderTodos();
+      });
+
+      ["journalBody", "quickNotes"].forEach((key) => {
+        el[key].addEventListener("input", () => {
+          if (key === "quickNotes") {
+            state.quickNotes = el[key].value;
+          } else {
+            saveJournalField(key, el[key].value);
+          }
+          save();
+          updateStats();
+          renderMonthlyReport();
+        });
+      });
+
+      el.journalSticker.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-sticker]");
+        if (!btn) return;
+        const current = getJournalForDate(state.selectedDate).sticker;
+        const next = current === btn.dataset.sticker ? "" : btn.dataset.sticker;
+        saveJournalField("sticker", next);
+        save();
+        syncInputs();
+        renderSelectedDayTasks();
+        renderMonthlyReport();
+      });
+
+      el.routineList.addEventListener("change", (e) => {
+        const cb = e.target.closest("input[type='checkbox'][data-rid]");
+        if (!cb) return;
+        const routine = state.routines.find((r) => r.id === cb.dataset.rid);
+        if (!routine) return;
+        routine.done = cb.checked;
+        save();
+        renderRoutines();
+        renderMonthlyReport();
+      });
+
+      el.routineList.addEventListener("input", (e) => {
+        const nameInput = e.target.closest(".routine-name");
+        if (!nameInput) return;
+        const row = e.target.closest("[data-rid]");
+        if (!row) return;
+        const routine = state.routines.find((r) => r.id === row.dataset.rid);
+        if (!routine) return;
+        routine.name = nameInput.value;
+        save();
+      });
+
+      el.routineList.addEventListener("click", (e) => {
+        const delBtn = e.target.closest("[data-delete-routine]");
+        if (!delBtn) return;
+        const rid = delBtn.dataset.deleteRoutine;
+        state.routines = state.routines.filter((r) => r.id !== rid);
+        Object.keys(state.routineLogs).forEach((k) => {
+          if (state.routineLogs[k] && rid in state.routineLogs[k]) {
+            delete state.routineLogs[k][rid];
+          }
+        });
+        save();
+        renderRoutines();
+        renderMonthlyReport();
+      });
+
+      el.addRoutineBtn.addEventListener("click", addRoutine);
+      el.routineInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          addRoutine();
+        }
+      });
+      el.routineTemplateRow.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-routines]");
+        if (!btn) return;
+        addRoutineTemplate(btn.dataset.routines);
+      });
+
+      el.calendarMonth.addEventListener("change", () => {
+        if (!el.calendarMonth.value) return;
+        state.calendarMonth = el.calendarMonth.value;
+        save();
+        renderCalendar();
+        renderMonthlyReport();
+      });
+
+      el.annualYear.addEventListener("change", () => {
+        const y = Number(el.annualYear.value);
+        if (!y || y < 2000 || y > 2100) return;
+        state.annualYear = y;
+        save();
+        renderAnnualOverview();
+      });
+
+      el.calendarGrid.addEventListener("click", (e) => {
+        const cell = e.target.closest(".day-cell[data-date]");
+        if (!cell) return;
+
+        state.selectedDate = cell.dataset.date;
+        state.calendarMonth = state.selectedDate.slice(0, 7);
+        setActiveTab("dashboard");
+        syncRoutinesFromSelectedDate();
+        save();
+        syncInputs();
+        renderTodos();
+        renderRoutines();
+        renderCalendar();
+        renderSelectedDayTasks();
+        renderMonthlyReport();
+      });
+
+      el.annualGrid.addEventListener("click", (e) => {
+        const card = e.target.closest("[data-annual-month]");
+        if (!card) return;
+        state.calendarMonth = card.dataset.annualMonth;
+        const [y, m] = state.calendarMonth.split("-").map(Number);
+        state.selectedDate = `${y}-${String(m).padStart(2, "0")}-01`;
+        setActiveTab("calendar");
+        syncRoutinesFromSelectedDate();
+        save();
+        syncInputs();
+        renderCalendar();
+        renderSelectedDayTasks();
+        renderMonthlyReport();
+      });
+
+      el.exportBtn.addEventListener("click", exportData);
+      el.importBtn.addEventListener("click", () => el.importFile.click());
+      el.importFile.addEventListener("change", () => {
+        const file = el.importFile.files && el.importFile.files[0];
+        if (file) importData(file);
+        el.importFile.value = "";
+      });
+    }
+
+    load();
+    renderWeekdayRow();
+    syncInputs();
+    renderTodos();
+    renderRoutines();
+    renderCalendar();
+    renderSelectedDayTasks();
+    renderMonthlyReport();
+    renderAnnualOverview();
+    bindEvents();
+  </script>
+</body>
+</html>

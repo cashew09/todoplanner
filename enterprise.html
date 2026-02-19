@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enterprise Calendar — 2026</title>
+  <style>
+    :root {
+      --bg: #f2f4f7;
+      --panel: #ffffff;
+      --ink: #101828;
+      --muted: #667085;
+      --line: #eaecf0;
+      --brand: #0f766e;
+      --brand-2: #115e59;
+      --accent: #0ea5a4;
+      --warn: #b42318;
+      --shadow: 0 18px 40px rgba(16, 24, 40, 0.08);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --focus: 0 0 0 3px rgba(14, 165, 164, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 600px at 80% -10%, #e1f4f2 0%, rgba(225,244,242,0) 55%),
+                  linear-gradient(180deg, #f8fafc 0%, #eef2f6 100%);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      letter-spacing: -0.01em;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr) 320px;
+      min-height: 100vh;
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .sidebar {
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #0f766e, #0ea5a4);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+    .nav button {
+      border: 0;
+      background: transparent;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .nav button.active {
+      background: #ecfdf3;
+      color: var(--brand-2);
+    }
+
+    .sidebar-card {
+      background: #f8fafb;
+      border: 1px solid #e5e7eb;
+      padding: 14px;
+      border-radius: 14px;
+    }
+    .sidebar-card h4 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .year-goal {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-height: 100px;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .year-goal:focus { outline: none; box-shadow: var(--focus); border-color: var(--accent); }
+
+    .main {
+      display: grid;
+      gap: 18px;
+    }
+
+    .topbar {
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .title-block p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #fff;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .btn {
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn.primary { background: var(--brand); color: #fff; }
+    .btn.ghost { background: #f3f4f6; color: var(--ink); }
+
+    .views {
+      display: flex;
+      gap: 8px;
+    }
+    .views button {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .views button.active {
+      background: #0f766e;
+      color: #fff;
+      border-color: #0f766e;
+    }
+
+    .content {
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      min-height: 600px;
+    }
+
+    .month-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+    .month-header h2 { margin: 0; font-size: 20px; }
+    .month-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .month-controls button {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .month-goal {
+      background: linear-gradient(135deg, #ecfdf3 0%, #f0fdfa 100%);
+      border: 1px solid #ccfbf1;
+      padding: 14px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+    .month-goal label { display: block; font-size: 12px; text-transform: uppercase; color: #0f766e; letter-spacing: 0.12em; }
+    .month-goal textarea {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      margin-top: 8px;
+      min-height: 70px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .month-goal textarea:focus { outline: none; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .dow {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      padding: 4px 0 8px;
+    }
+
+    .day {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      min-height: 90px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .day:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.12);
+    }
+    .day.muted { background: #f8fafc; color: #98a2b3; }
+    .day.selected { border-color: var(--accent); box-shadow: var(--focus); }
+    .day .num {
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .day .tag {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .day.sun .num { color: #b42318; }
+    .day.sat .num { color: #2563eb; }
+
+    .weeklist {
+      margin-top: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .weekitem {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .weekitem span {
+      background: #f2f4f7;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .weekitem textarea {
+      flex: 1;
+      border: 0;
+      font-family: inherit;
+      font-size: 13px;
+      min-height: 40px;
+    }
+    .weekitem textarea:focus { outline: none; }
+
+    .right {
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .detail-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .detail-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    .detail-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .detail-card textarea {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 160px;
+      font-family: inherit;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .detail-card textarea:focus { outline: none; box-shadow: var(--focus); border-color: var(--accent); }
+
+    .insights {
+      background: linear-gradient(145deg, #0f766e, #0ea5a4);
+      border-radius: 16px;
+      color: #fff;
+      padding: 14px;
+    }
+    .insights h4 { margin: 0 0 8px; font-size: 14px; }
+    .insights ul {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .year-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .month-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .month-card h4 { margin: 0 0 6px; font-size: 14px; }
+    .month-card p { margin: 0; font-size: 12px; color: var(--muted); }
+
+    .day-view {
+      display: grid;
+      gap: 12px;
+    }
+    .slot {
+      border: 1px dashed #cbd5f5;
+      border-radius: 12px;
+      padding: 12px;
+      background: #f8fafc;
+    }
+    .slot h4 { margin: 0 0 6px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .slot textarea {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      font-family: inherit;
+      min-height: 80px;
+    }
+
+    @media (max-width: 1200px) {
+      .app { grid-template-columns: 220px minmax(0, 1fr); }
+      .right { display: none; }
+    }
+    @media (max-width: 880px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { order: 2; }
+      .right { display: block; order: 3; }
+      .year-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-badge">E</div>
+        Enterprise Planner
+      </div>
+      <div class="nav">
+        <button class="active">Dashboard</button>
+        <button>Teams</button>
+        <button>Projects</button>
+        <button>Insights</button>
+        <button>Settings</button>
+      </div>
+      <div class="sidebar-card">
+        <h4>2026 Year Focus</h4>
+        <textarea class="year-goal" data-store="year-goal" placeholder="2026 핵심 목표를 입력하세요"></textarea>
+      </div>
+      <div class="sidebar-card">
+        <h4>Quick Filters</h4>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <span class="pill">Strategy</span>
+          <span class="pill">Operations</span>
+          <span class="pill">People</span>
+          <span class="pill">Growth</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="title-block">
+          <h1>2026 Executive Calendar</h1>
+          <p>Portfolio-level schedule view with weekly objectives and daily execution.</p>
+        </div>
+        <div class="actions">
+          <div class="views">
+            <button class="active" data-view="month">Month</button>
+            <button data-view="year">Year</button>
+            <button data-view="week">Week</button>
+            <button data-view="day">Day</button>
+          </div>
+          <button class="btn ghost">Export</button>
+          <button class="btn primary">New Initiative</button>
+        </div>
+      </div>
+
+      <section class="content" id="mainContent">
+        <!-- render here -->
+      </section>
+    </main>
+
+    <aside class="right" id="detailPanel">
+      <div class="detail-card">
+        <h3 id="detailTitle">선택된 일정</h3>
+        <p id="detailSubtitle">날짜를 선택해 상세 메모를 기록하세요.</p>
+        <textarea id="detailNote" placeholder="핵심 이슈, 회의, 의사결정 사항을 기록"></textarea>
+      </div>
+      <div class="insights">
+        <h4>Executive Signals</h4>
+        <ul>
+          <li>이번 분기 핵심 우선순위 3개를 유지하세요.</li>
+          <li>주간 목표는 월간 목표와 직접 연결되도록 정리하세요.</li>
+          <li>회의 밀도가 높은 주는 실행 시간 확보가 필요합니다.</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const YEAR = 2026;
+    const monthNames = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+    const dayNames = ["일","월","화","수","목","금","토"];
+    let currentMonth = 0;
+    let currentView = "month";
+    let selectedDate = null;
+
+    const contentEl = document.getElementById("mainContent");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailSubtitle = document.getElementById("detailSubtitle");
+    const detailNote = document.getElementById("detailNote");
+
+    function storeKey(k) { return `ent-${YEAR}-${k}`; }
+    function save(key, value) { localStorage.setItem(storeKey(key), value); }
+    function load(key) { return localStorage.getItem(storeKey(key)) || ""; }
+
+    function formatDate(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${dd}`;
+    }
+
+    function startOfWeek(date) {
+      const d = new Date(date);
+      const day = d.getDay();
+      d.setDate(d.getDate() - day);
+      return d;
+    }
+
+    function renderMonthView() {
+      const monthGoalKey = `month-goal-${currentMonth + 1}`;
+      const monthGoal = load(monthGoalKey);
+
+      const firstDay = new Date(YEAR, currentMonth, 1);
+      const lastDay = new Date(YEAR, currentMonth + 1, 0);
+      const start = startOfWeek(firstDay);
+
+      let html = `
+        <div class="month-header">
+          <h2>${YEAR} ${monthNames[currentMonth]}</h2>
+          <div class="month-controls">
+            <button id="prevMonth">◀</button>
+            <button id="nextMonth">▶</button>
+          </div>
+        </div>
+        <div class="month-goal">
+          <label>Monthly Priority</label>
+          <textarea id="monthGoal" placeholder="${monthNames[currentMonth]}의 핵심 목표를 입력하세요">${monthGoal}</textarea>
+        </div>
+        <div class="grid">
+          ${dayNames.map(d => `<div class="dow">${d}</div>`).join("")}
+        </div>
+        <div class="grid" id="monthGrid"></div>
+        <div class="weeklist" id="weekList"></div>
+      `;
+      contentEl.innerHTML = html;
+
+      const grid = document.getElementById("monthGrid");
+      const weekList = document.getElementById("weekList");
+
+      const days = [];
+      const cursor = new Date(start);
+      while (cursor <= lastDay || cursor.getDay() !== 0) {
+        days.push(new Date(cursor));
+        cursor.setDate(cursor.getDate() + 1);
+      }
+
+      days.forEach(d => {
+        const isCurrent = d.getMonth() === currentMonth;
+        const iso = formatDate(d);
+        const note = load(`day-note-${iso}`);
+        const cls = ["day"];
+        if (!isCurrent) cls.push("muted");
+        if (selectedDate === iso) cls.push("selected");
+        if (d.getDay() === 0) cls.push("sun");
+        if (d.getDay() === 6) cls.push("sat");
+
+        const el = document.createElement("div");
+        el.className = cls.join(" ");
+        el.dataset.iso = iso;
+        el.innerHTML = `
+          <div class="num">${d.getDate()}</div>
+          <div class="tag">${note ? note.slice(0, 22) : "No highlights"}</div>
+        `;
+        el.addEventListener("click", () => selectDate(iso));
+        grid.appendChild(el);
+      });
+
+      for (let i = 1; i <= 6; i++) {
+        const key = `week-goal-${currentMonth + 1}-${i}`;
+        const item = document.createElement("div");
+        item.className = "weekitem";
+        item.innerHTML = `
+          <span>Week ${i}</span>
+          <textarea data-week="${i}" placeholder="주간 목표를 입력하세요">${load(key)}</textarea>
+        `;
+        item.querySelector("textarea").addEventListener("input", (e) => {
+          save(key, e.target.value);
+        });
+        weekList.appendChild(item);
+      }
+
+      document.getElementById("monthGoal").addEventListener("input", (e) => {
+        save(monthGoalKey, e.target.value);
+      });
+      document.getElementById("prevMonth").addEventListener("click", () => changeMonth(-1));
+      document.getElementById("nextMonth").addEventListener("click", () => changeMonth(1));
+    }
+
+    function renderYearView() {
+      const cards = monthNames.map((m, i) => {
+        const key = `month-goal-${i + 1}`;
+        return `
+          <div class="month-card" data-month="${i}">
+            <h4>${m}</h4>
+            <p>${load(key) || "핵심 목표 없음"}</p>
+          </div>
+        `;
+      }).join("");
+      contentEl.innerHTML = `
+        <div class="month-header">
+          <h2>${YEAR} Year Overview</h2>
+        </div>
+        <div class="year-grid">${cards}</div>
+      `;
+      contentEl.querySelectorAll(".month-card").forEach(card => {
+        card.addEventListener("click", () => {
+          currentMonth = Number(card.dataset.month);
+          setView("month");
+        });
+      });
+    }
+
+    function renderWeekView() {
+      const base = selectedDate ? new Date(selectedDate) : new Date(YEAR, currentMonth, 1);
+      const start = startOfWeek(base);
+      const days = Array.from({ length: 7 }).map((_, i) => {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        return d;
+      });
+
+      const items = days.map(d => {
+        const iso = formatDate(d);
+        const key = `day-note-${iso}`;
+        return `
+          <div class="weekitem">
+            <span>${dayNames[d.getDay()]} ${d.getDate()}</span>
+            <textarea data-day="${iso}" placeholder="일정 요약">${load(key)}</textarea>
+          </div>
+        `;
+      }).join("");
+
+      contentEl.innerHTML = `
+        <div class="month-header">
+          <h2>Week Focus — ${monthNames[start.getMonth()]} ${start.getDate()} ~</h2>
+        </div>
+        <div class="weeklist">${items}</div>
+      `;
+      contentEl.querySelectorAll("textarea[data-day]").forEach(t => {
+        t.addEventListener("input", (e) => {
+          save(`day-note-${e.target.dataset.day}`, e.target.value);
+        });
+      });
+    }
+
+    function renderDayView() {
+      const base = selectedDate ? new Date(selectedDate) : new Date(YEAR, currentMonth, 1);
+      const iso = formatDate(base);
+      const key = `day-note-${iso}`;
+      contentEl.innerHTML = `
+        <div class="month-header">
+          <h2>${monthNames[base.getMonth()]} ${base.getDate()}, ${dayNames[base.getDay()]}</h2>
+        </div>
+        <div class="day-view">
+          <div class="slot">
+            <h4>Morning Focus</h4>
+            <textarea data-slot="morning" placeholder="오전 핵심 목표"></textarea>
+          </div>
+          <div class="slot">
+            <h4>Afternoon Execution</h4>
+            <textarea data-slot="afternoon" placeholder="오후 실행 계획"></textarea>
+          </div>
+          <div class="slot">
+            <h4>Daily Notes</h4>
+            <textarea data-slot="note" placeholder="하루 요약">${load(key)}</textarea>
+          </div>
+        </div>
+      `;
+      contentEl.querySelector("textarea[data-slot='note']").addEventListener("input", (e) => {
+        save(key, e.target.value);
+      });
+    }
+
+    function changeMonth(delta) {
+      currentMonth = (currentMonth + delta + 12) % 12;
+      render();
+    }
+
+    function selectDate(iso) {
+      selectedDate = iso;
+      const d = new Date(iso);
+      detailTitle.textContent = `${monthNames[d.getMonth()]} ${d.getDate()} 일정 메모`;
+      detailSubtitle.textContent = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} (${dayNames[d.getDay()]})`;
+      detailNote.value = load(`day-note-${iso}`);
+      detailNote.oninput = (e) => save(`day-note-${iso}`, e.target.value);
+      render();
+    }
+
+    function setView(view) {
+      currentView = view;
+      document.querySelectorAll(".views button").forEach(b => {
+        b.classList.toggle("active", b.dataset.view === view);
+      });
+      render();
+    }
+
+    function render() {
+      if (currentView === "month") renderMonthView();
+      if (currentView === "year") renderYearView();
+      if (currentView === "week") renderWeekView();
+      if (currentView === "day") renderDayView();
+    }
+
+    document.querySelectorAll(".views button").forEach(btn => {
+      btn.addEventListener("click", () => setView(btn.dataset.view));
+    });
+
+    document.querySelector(".year-goal").value = load("year-goal");
+    document.querySelector(".year-goal").addEventListener("input", (e) => {
+      save("year-goal", e.target.value);
+    });
+
+    const initialDate = new Date(YEAR, currentMonth, 1);
+    selectDate(formatDate(initialDate));
+    setView("month");
+  </script>
+</body>
+</html>

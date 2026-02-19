@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026 엔터프라이즈 스케줄러</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg-0: #f7f4ef;
+      --bg-1: #f2efe8;
+      --ink-0: #161616;
+      --ink-1: #3b3b3b;
+      --ink-2: #6b6b6b;
+      --accent-0: #1f3d35;
+      --accent-1: #b8c3a2;
+      --accent-2: #efe7d6;
+      --line: rgba(22, 22, 22, 0.08);
+      --card: #ffffff;
+      --shadow: 0 18px 50px rgba(18, 18, 18, 0.08);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif;
+      color: var(--ink-0);
+      background: radial-gradient(circle at 20% 10%, #fff 0%, var(--bg-0) 35%, var(--bg-1) 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(31, 61, 53, 0.08) 0 120px, transparent 120px),
+        radial-gradient(circle at 86% 8%, rgba(184, 195, 162, 0.2) 0 160px, transparent 160px),
+        radial-gradient(circle at 90% 82%, rgba(31, 61, 53, 0.06) 0 180px, transparent 180px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 40px 28px 120px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1fr;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .hero-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -30% -40% auto;
+      width: 280px;
+      height: 280px;
+      background: conic-gradient(from 120deg, rgba(31, 61, 53, 0.12), transparent 40%, rgba(184, 195, 162, 0.2));
+      border-radius: 50%;
+    }
+
+    .hero h1 {
+      font-family: "Space Grotesk", "IBM Plex Sans KR", sans-serif;
+      font-size: clamp(22px, 2.4vw, 30px);
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--accent-0);
+      color: #fff;
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 10px 20px rgba(31, 61, 53, 0.15);
+    }
+
+    .btn.secondary {
+      background: #f0ede6;
+      color: var(--ink-1);
+      box-shadow: none;
+      border: 1px solid var(--line);
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .hero-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section {
+      margin-top: 46px;
+    }
+
+    .global-tabs {
+      display: flex;
+      gap: 10px;
+      margin: 24px 0 10px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: #f4f1ea;
+      color: var(--ink-1);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-0);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 12px 20px rgba(31, 61, 53, 0.2);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-family: "Space Grotesk", "IBM Plex Sans KR", sans-serif;
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .section-sub {
+      margin: 6px 0 0;
+      color: var(--ink-2);
+      font-size: 13px;
+    }
+
+    .yearly-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .goal-card {
+      background: var(--card);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      border: 1px solid var(--line);
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .goal-card h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-1);
+    }
+
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 12px;
+      background: #fbfbf9;
+      resize: vertical;
+      color: var(--ink-1);
+      min-height: 90px;
+    }
+
+    textarea:focus {
+      outline: 2px solid rgba(31, 61, 53, 0.2);
+      border-color: rgba(31, 61, 53, 0.3);
+    }
+
+    .focus-block {
+      grid-column: span 3;
+      background: linear-gradient(135deg, #f4f1ea, #fff);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      border: 1px dashed rgba(31, 61, 53, 0.2);
+    }
+
+    .focus-block h3 {
+      margin: 0 0 8px;
+      font-size: 13px;
+    }
+
+    .month-section {
+      margin-top: 30px;
+    }
+
+    .month-panel {
+      display: none;
+    }
+
+    .month-panel.active {
+      display: block;
+    }
+
+    .month-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .month-tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink-1);
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .month-tab.active {
+      background: var(--accent-1);
+      border-color: transparent;
+      color: #1b1b1b;
+      font-weight: 600;
+    }
+
+    .checklist-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .check-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent-0);
+    }
+
+    .check-item input[type="text"] {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-size: 11px;
+      background: #fbfbf9;
+      color: var(--ink-1);
+    }
+
+    body.checklist-mode .day-plan { display: none; }
+    body.checklist-mode .checklist-wrap { display: flex; }
+
+    .month-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .month-title {
+      font-family: "Space Grotesk", "IBM Plex Sans KR", sans-serif;
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .month-goals {
+      background: var(--card);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .month-goals h4 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      color: var(--ink-1);
+    }
+
+    .calendar-wrap {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .calendar-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      font-size: 12px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3f0e9;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .week { width: 70px; font-weight: 600; background: #fbfaf7; text-align: center; }
+    .weekly-goal-col { width: 220px; background: #fbfaf7; }
+    tbody tr.week-row { height: 190px; }
+    .week-goal { height: 150px; }
+    .day-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .day-cell .date-num { font-weight: 600; margin-bottom: 4px; display: inline-block; }
+    .day-plan { height: 130px; }
+    .sun { background: #fff6e8 !important; }
+    .sat { background: #eef6ff !important; }
+
+    .month-banner-wrap {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .month-banner {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .banner-actions {
+      display: flex;
+      gap: 8px;
+      padding: 10px 14px 14px;
+      align-items: center;
+      justify-content: flex-end;
+      background: #fff;
+      border-top: 1px solid var(--line);
+    }
+
+    .upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-0);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 12px;
+      user-select: none;
+    }
+
+    .upload-btn input { display: none; }
+
+    .reset-btn {
+      background: #f0ede6;
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--ink-1);
+    }
+
+    .fade-in {
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .yearly-grid { grid-template-columns: repeat(2, 1fr); }
+      .focus-block { grid-column: span 2; }
+    }
+
+    @media (max-width: 720px) {
+      .app { padding: 28px 16px 100px; }
+      .yearly-grid { grid-template-columns: 1fr; }
+      .focus-block { grid-column: span 1; }
+      .hero-row { align-items: flex-start; }
+      .month-banner { height: 220px; }
+      .btn { padding: 12px 16px; font-size: 14px; }
+      .tab-btn { padding: 12px 16px; font-size: 14px; }
+      .month-tab { padding: 10px 14px; font-size: 13px; }
+      textarea { font-size: 13px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="hero-card fade-in">
+        <div class="hero-row">
+          <h1>2026 개인 맞춤 스케줄러</h1>
+          <div class="topbar">
+            <button class="btn" id="btnExport">내보내기 (JSON)</button>
+            <button class="btn secondary" id="btnImport">가져오기 (JSON)</button>
+            <input type="file" id="importFile" accept="application/json" style="display:none" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="global-tabs">
+      <button class="tab-btn active" data-tab="yearly">연간 목표</button>
+      <button class="tab-btn" data-tab="monthly">월간/데일리</button>
+    </div>
+
+    <section class="section yearly tab-panel active" id="panel-yearly">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">연간 목표 설계</h2>
+          <p class="section-sub">카테고리별로 정리하면 실행 계획이 더 명확해집니다.</p>
+        </div>
+      </div>
+      <div class="yearly-grid">
+        <div class="goal-card fade-in">
+          <h3>운동 / 건강</h3>
+          <textarea data-persist data-key="year-goal-fitness" placeholder="예: 주 3회 웨이트, 10km 러닝 완주"></textarea>
+        </div>
+        <div class="goal-card fade-in" style="animation-delay:0.05s">
+          <h3>공부 / 성장</h3>
+          <textarea data-persist data-key="year-goal-study" placeholder="예: 자격증 1개, 분기별 독서 5권"></textarea>
+        </div>
+        <div class="goal-card fade-in" style="animation-delay:0.1s">
+          <h3>재테크 / 자산</h3>
+          <textarea data-persist data-key="year-goal-finance" placeholder="예: 투자 포트폴리오 구축, 비상금 6개월"></textarea>
+        </div>
+        <div class="goal-card fade-in" style="animation-delay:0.15s">
+          <h3>커리어 / 프로젝트</h3>
+          <textarea data-persist data-key="year-goal-career" placeholder="예: 포트폴리오 리뉴얼, 사이드프로젝트 런칭"></textarea>
+        </div>
+        <div class="goal-card fade-in" style="animation-delay:0.2s">
+          <h3>관계 / 네트워크</h3>
+          <textarea data-persist data-key="year-goal-people" placeholder="예: 월 1회 네트워킹, 가족 여행 2회"></textarea>
+        </div>
+        <div class="goal-card fade-in" style="animation-delay:0.25s">
+          <h3>라이프스타일</h3>
+          <textarea data-persist data-key="year-goal-life" placeholder="예: 미니멀 라이프, 취미 루틴 정착"></textarea>
+        </div>
+        <div class="focus-block fade-in" style="animation-delay:0.3s">
+          <h3>올해의 핵심 키워드</h3>
+          <textarea data-persist data-key="year-goal-focus" placeholder="예: 집중, 균형, 실행"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="section monthly tab-panel" id="panel-monthly">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">월간 플래닝 & 데일리 일정</h2>
+          <p class="section-sub">월 목표와 주간 목표, 그리고 날짜별 일정까지 한 흐름으로 관리하세요.</p>
+        </div>
+        <div>
+          <button class="btn secondary" id="btnChecklist">체크리스트 모드</button>
+        </div>
+      </div>
+      <div class="month-tabs" id="monthTabs"></div>
+      <div id="calendar"></div>
+    </section>
+  </div>
+
+  <script>
+    const year = 2026;
+    const storagePrefix = `scheduler-${year}-`;
+    const calendarEl = document.getElementById("calendar");
+    const monthTabsEl = document.getElementById("monthTabs");
+    const checklistBtn = document.getElementById("btnChecklist");
+    const months = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+    const days = ["일","월","화","수","목","금","토"];
+
+    const defaultBanners = [
+      "https://images.unsplash.com/photo-1483921020237-2ff51e8e4b22?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1551020622-9337a10e1ac9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1618248182372-f13a707f0374?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1613816980988-098a332c038e?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3De",
+      "https://images.unsplash.com/photo-1590163637316-b2a8d46baf21?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1621518856558-9b2ce2d0660d?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://plus.unsplash.com/premium_photo-1661963037608-26bdb13b2032?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1596610602520-61b39577467e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8OCVFQyU5QiU5NHxlbnwwfHwwfHx8MA%3D%3D",
+      "https://plus.unsplash.com/premium_photo-1665311511916-3cd560fc5d3e?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1568192746239-8eb514dd7810?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1604238408942-acae3539d28c?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1639761045652-2c8a36f32b3e?q=80&w=1194&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    ];
+
+    let weekCount = 1;
+
+    function getSunday(date) {
+      const d = new Date(date);
+      const day = d.getDay();
+      d.setDate(d.getDate() - day);
+      return d;
+    }
+
+    function formatLocalISO(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${dd}`;
+    }
+
+    function fullKey(key) { return storagePrefix + key; }
+
+    function saveToStorage(key, value) {
+      try { localStorage.setItem(fullKey(key), value); }
+      catch (e) { console.warn("LocalStorage 저장 실패:", e); }
+    }
+
+    function loadFromStorage(key) {
+      try { return localStorage.getItem(fullKey(key)) ?? ""; }
+      catch (e) { console.warn("LocalStorage 로드 실패:", e); return ""; }
+    }
+
+    function removeFromStorage(key) {
+      try { localStorage.removeItem(fullKey(key)); }
+      catch (e) { console.warn("LocalStorage 삭제 실패:", e); }
+    }
+
+    function bindPersist(el) {
+      const key = el.dataset.key;
+      if (!key) return;
+      if (el.type === "checkbox") {
+        el.checked = loadFromStorage(key) === "true";
+        el.addEventListener("change", () => saveToStorage(key, String(el.checked)));
+        return;
+      }
+      el.value = loadFromStorage(key);
+      el.addEventListener("input", () => saveToStorage(key, el.value));
+    }
+
+    function exportAll() {
+      const data = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith(storagePrefix)) continue;
+        const shortKey = k.slice(storagePrefix.length);
+        data[shortKey] = localStorage.getItem(k);
+      }
+
+      const payload = {
+        version: 1,
+        year,
+        exportedAt: new Date().toISOString(),
+        data
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `scheduler-${year}-backup.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importAllFromFile(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          const incoming = parsed?.data && typeof parsed.data === "object" ? parsed.data : parsed;
+          if (!incoming || typeof incoming !== "object") return;
+
+          Object.entries(incoming).forEach(([k, v]) => {
+            if (typeof k !== "string") return;
+            saveToStorage(k, typeof v === "string" ? v : JSON.stringify(v));
+          });
+
+          location.reload();
+        } catch (e) {
+          alert("가져오기 실패: JSON 형식을 확인해 주세요.");
+          console.warn(e);
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    }
+
+    function bannerKeyForMonth(monthIndex1Based) {
+      return `month-img-${monthIndex1Based}`;
+    }
+
+    function applyBanner(imgEl) {
+      const key = imgEl.dataset.key;
+      const monthIndex = Number(imgEl.dataset.month);
+      const saved = loadFromStorage(key);
+      imgEl.src = saved || defaultBanners[monthIndex - 1];
+    }
+
+    function bindBannerUpload(inputEl) {
+      const key = inputEl.dataset.imgkey;
+      const month = Number(inputEl.dataset.month);
+      const img = document.querySelector(`img.month-banner[data-key="${key}"][data-month="${month}"]`);
+      if (!img) return;
+
+      inputEl.addEventListener("change", async () => {
+        const file = inputEl.files && inputEl.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = reader.result;
+          try {
+            saveToStorage(key, dataUrl);
+            img.src = dataUrl;
+          } catch (e) {
+            alert("이미지 저장 실패(용량 초과 가능). 더 작은 용량의 사진을 사용해 주세요.");
+            console.warn(e);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function bindBannerReset(btnEl) {
+      const key = btnEl.dataset.resetkey;
+      const month = Number(btnEl.dataset.month);
+      const img = document.querySelector(`img.month-banner[data-key="${key}"][data-month="${month}"]`);
+      btnEl.addEventListener("click", () => {
+        removeFromStorage(key);
+        img.src = defaultBanners[month - 1];
+      });
+    }
+
+    function setActivePanel(tab) {
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === tab);
+      });
+      document.querySelectorAll(".tab-panel").forEach((panel) => {
+        panel.classList.toggle("active", panel.id === `panel-${tab}`);
+      });
+      try { localStorage.setItem(fullKey("active-tab"), tab); } catch (e) {}
+    }
+
+    function setActiveMonth(monthIndex) {
+      document.querySelectorAll(".month-tab").forEach((btn) => {
+        btn.classList.toggle("active", Number(btn.dataset.month) === monthIndex);
+      });
+      document.querySelectorAll(".month-panel").forEach((panel) => {
+        panel.classList.toggle("active", Number(panel.dataset.month) === monthIndex);
+      });
+      try { localStorage.setItem(fullKey("active-month"), String(monthIndex)); } catch (e) {}
+    }
+
+    function buildMonthTabs() {
+      monthTabsEl.innerHTML = months.map((label, idx) => {
+        const monthIndex = idx + 1;
+        return `<button class="month-tab" data-month="${monthIndex}">${label}</button>`;
+      }).join("");
+
+      monthTabsEl.querySelectorAll(".month-tab").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          setActiveMonth(Number(btn.dataset.month));
+        });
+      });
+    }
+
+    let current = getSunday(new Date(year, 0, 1));
+
+    for (let m = 0; m < 12; m++) {
+      const monthEnd = new Date(year, m + 1, 0);
+      const monthIndex1Based = m + 1;
+
+      let html = `<section class="month-section month-panel fade-in" data-month="${monthIndex1Based}" style="animation-delay:${m * 0.03}s">`;
+      html += `
+        <div class="month-header">
+          <h3 class="month-title">${months[m]}</h3>
+        </div>
+      `;
+
+      const bKey = bannerKeyForMonth(monthIndex1Based);
+      html += `
+        <div class="month-banner-wrap">
+          <img class="month-banner" data-month="${monthIndex1Based}" data-key="${bKey}" alt="${months[m]} 배너">
+          <div class="banner-actions">
+            <label class="upload-btn">
+              사진 바꾸기
+              <input type="file" accept="image/*" data-month="${monthIndex1Based}" data-imgkey="${bKey}">
+            </label>
+            <button class="reset-btn" type="button" data-month="${monthIndex1Based}" data-resetkey="${bKey}">기본 이미지로</button>
+          </div>
+        </div>
+      `;
+
+      html += `
+        <div class="month-goals">
+          <h4>${months[m]} 목표</h4>
+          <textarea
+            class="month-goal-text"
+            data-persist
+            data-key="month-goal-${monthIndex1Based}"
+            placeholder="${months[m]}에 이루고 싶은 목표를 적어보세요"
+          ></textarea>
+        </div>
+      `;
+
+      html += `<div class="calendar-wrap"><div class="calendar-scroll"><table>
+        <thead>
+          <tr>
+            <th class="week">주차</th>
+            <th class="weekly-goal-col">주간 목표</th>
+            ${days.map((d, idx) => {
+              const cls = idx === 0 ? 'sun' : (idx === 6 ? 'sat' : '');
+              return `<th class="${cls}">${d}</th>`;
+            }).join("")}
+          </tr>
+        </thead>
+        <tbody>`;
+
+      while (true) {
+        let hasDayInThisMonth = false;
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(current);
+          d.setDate(current.getDate() + i);
+          if (d.getMonth() === m) { hasDayInThisMonth = true; break; }
+        }
+        if (!hasDayInThisMonth) {
+          if (current > monthEnd) break;
+        }
+
+        html += `<tr class="week-row">
+          <td class="week">W${weekCount}</td>
+          <td class="weekly-goal-col">
+            <textarea
+              class="week-goal"
+              data-persist
+              data-key="week-goal-W${weekCount}"
+              placeholder="이번 주 목표"
+            ></textarea>
+          </td>`;
+
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(current);
+          d.setDate(current.getDate() + i);
+          const cls = i === 0 ? 'sun' : (i === 6 ? 'sat' : '');
+
+          if (d.getMonth() === m) {
+            const iso = formatLocalISO(d);
+            html += `
+              <td class="${cls}">
+                <div class="day-cell">
+                  <div class="date-num">${d.getDate()}</div>
+                  <textarea
+                    class="day-plan"
+                    data-persist
+                    data-key="day-plan-${iso}"
+                    placeholder="하루 일정"
+                  ></textarea>
+                  <div class="checklist-wrap">
+                    ${[1,2,3].map((idx) => `
+                      <label class="check-item">
+                        <input type="checkbox" data-persist data-key="day-check-${iso}-${idx}">
+                        <input type="text" data-persist data-key="day-check-text-${iso}-${idx}" placeholder="할 일 ${idx}">
+                      </label>
+                    `).join("")}
+                  </div>
+                </div>
+              </td>`;
+          } else {
+            html += `<td class="${cls}"></td>`;
+          }
+        }
+
+        html += `</tr>`;
+
+        current.setDate(current.getDate() + 7);
+        weekCount++;
+
+        if (current > monthEnd) {
+          let nextHas = false;
+          for (let i = 0; i < 7; i++) {
+            const d = new Date(current);
+            d.setDate(current.getDate() + i);
+            if (d.getMonth() === m) { nextHas = true; break; }
+          }
+          if (!nextHas) break;
+        }
+      }
+
+      html += `</tbody></table></div></div>`;
+      html += `</section>`;
+
+      calendarEl.innerHTML += html;
+    }
+
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => setActivePanel(btn.dataset.tab));
+    });
+
+    buildMonthTabs();
+
+    const storedTab = loadFromStorage("active-tab") || "monthly";
+    setActivePanel(storedTab);
+
+    const storedMonth = Number(loadFromStorage("active-month"));
+    const now = new Date();
+    const initialMonth = storedMonth || (now.getFullYear() === year ? now.getMonth() + 1 : 1);
+    setActiveMonth(initialMonth);
+
+    const storedChecklist = loadFromStorage("checklist-mode") === "on";
+    document.body.classList.toggle("checklist-mode", storedChecklist);
+    checklistBtn.textContent = storedChecklist ? "일정 텍스트 모드" : "체크리스트 모드";
+    checklistBtn.addEventListener("click", () => {
+      const enabled = !document.body.classList.contains("checklist-mode");
+      document.body.classList.toggle("checklist-mode", enabled);
+      checklistBtn.textContent = enabled ? "일정 텍스트 모드" : "체크리스트 모드";
+      try { localStorage.setItem(fullKey("checklist-mode"), enabled ? "on" : "off"); } catch (e) {}
+    });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const monthlyPanel = document.getElementById("panel-monthly");
+    monthlyPanel.addEventListener("touchstart", (e) => {
+      const t = e.touches[0];
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+    }, { passive: true });
+
+    monthlyPanel.addEventListener("touchend", (e) => {
+      if (!monthlyPanel.classList.contains("active")) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - touchStartX;
+      const dy = t.clientY - touchStartY;
+      if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)) return;
+      const active = document.querySelector(".month-tab.active");
+      const currentMonth = active ? Number(active.dataset.month) : 1;
+      const nextMonth = dx < 0 ? Math.min(12, currentMonth + 1) : Math.max(1, currentMonth - 1);
+      if (nextMonth !== currentMonth) setActiveMonth(nextMonth);
+    }, { passive: true });
+
+    document.querySelectorAll("textarea[data-persist]").forEach(bindPersist);
+    document.querySelectorAll("img.month-banner").forEach(applyBanner);
+    document.querySelectorAll('input[type="file"][data-imgkey]').forEach(bindBannerUpload);
+    document.querySelectorAll('button[data-resetkey]').forEach(bindBannerReset);
+
+    document.getElementById("btnExport").addEventListener("click", exportAll);
+
+    const importFile = document.getElementById("importFile");
+    document.getElementById("btnImport").addEventListener("click", () => importFile.click());
+    importFile.addEventListener("change", () => {
+      const file = importFile.files && importFile.files[0];
+      if (file) importAllFromFile(file);
+      importFile.value = "";
+    });
+  </script>
+</body>
+</html>
