@@ -99,6 +99,105 @@
       width: min(360px, 100%);
     }
 
+    .account-card {
+      margin-top: 14px;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: rgba(14, 37, 72, 0.34);
+      backdrop-filter: blur(5px);
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 8px;
+    }
+
+    .account-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: rgba(255, 255, 255, 0.94);
+      font-size: 12px;
+    }
+
+    .account-user {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .account-sync {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 3px 9px;
+      border: 1px solid rgba(255, 255, 255, 0.38);
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.92);
+      white-space: nowrap;
+    }
+
+    .account-sync::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #9ad0ff;
+      box-shadow: 0 0 0 3px rgba(154, 208, 255, 0.18);
+    }
+
+    .account-sync.is-live::before {
+      background: #5af0bf;
+      box-shadow: 0 0 0 3px rgba(90, 240, 191, 0.22);
+    }
+
+    .account-sync.is-saving::before {
+      background: #ffcd74;
+      box-shadow: 0 0 0 3px rgba(255, 205, 116, 0.22);
+    }
+
+    .account-auth {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .account-auth input {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      font-size: 13px;
+      min-width: 0;
+    }
+
+    .account-auth input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .account-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn.small {
+      padding: 9px 12px;
+      font-size: 12px;
+    }
+
+    .auth-help {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
     .btn {
       border: 0;
       border-radius: 999px;
@@ -126,7 +225,7 @@
     .stats {
       margin-top: 22px;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       position: relative;
       z-index: 2;
@@ -193,6 +292,7 @@
       gap: 12px;
       flex-wrap: wrap;
     }
+    .date-hub.is-hidden { display: none; }
 
     .date-hub .label { font-size: 12px; color: var(--muted); }
     .date-hub .value {
@@ -220,6 +320,24 @@
       cursor: pointer;
     }
 
+    .date-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-nav-btn {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: #2f67af;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
     .layout {
       margin-top: 10px;
       display: grid;
@@ -228,7 +346,7 @@
       align-items: start;
     }
     .split-layout {
-      grid-template-columns: 1.25fr 0.75fr;
+      grid-template-columns: 1fr 1fr;
       align-items: stretch;
     }
     .column { display: grid; gap: 14px; align-content: start; }
@@ -471,6 +589,10 @@
 
     .todo-item.done { background: #f1f5fb; color: #75839a; }
     .todo-item.done .todo-title { text-decoration: line-through; }
+    .todo-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
 
     .priority {
       display: inline-block;
@@ -542,13 +664,24 @@
       align-items: center;
       background: #f5f8ff;
     }
+    .routine-main {
+      flex: 1;
+      min-width: 0;
+    }
+    .routine-item.done {
+      background: #f1f5fb;
+      border-color: #d8e0ef;
+    }
+    .routine-item.done .routine-name {
+      text-decoration: line-through;
+      color: #6f8099;
+    }
 
     .life-card {
       border: 1px solid #d5e3fb;
       background: linear-gradient(180deg, #f5f8ff, #ffffff 45%);
     }
 
-    .routine-item strong { font-size: 13px; }
     .routine-name {
       border: 0;
       background: transparent;
@@ -556,6 +689,8 @@
       font-size: 14px;
       font-weight: 600;
       color: #2d4f80;
+      width: 100%;
+      min-width: 0;
     }
 
     .routine-actions {
@@ -571,15 +706,13 @@
       color: #2f5690;
       background: #f1f6ff;
     }
-    .streak-badge {
-      font-size: 11px;
-      color: #2f5690;
-      background: #e7f0ff;
-      border: 1px solid #c8daff;
-      border-radius: 999px;
-      padding: 2px 8px;
-      font-weight: 600;
-      margin-right: 6px;
+    .routine-empty {
+      border: 1px dashed #c9d8ef;
+      border-radius: 10px;
+      padding: 10px;
+      color: #6b7f9d;
+      font-size: 12px;
+      background: #f7faff;
     }
 
     .routine-add {
@@ -652,7 +785,7 @@
     .calendar-layout {
       margin-top: 10px;
       display: grid;
-      grid-template-columns: 1.25fr 1fr;
+      grid-template-columns: 1fr;
       gap: 14px;
       align-items: start;
     }
@@ -664,6 +797,32 @@
       gap: 10px;
       margin-bottom: 10px;
       flex-wrap: wrap;
+    }
+    .month-nav-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .month-nav-btn {
+      width: 34px;
+      height: 34px;
+      border: 1px solid #c7d9f4;
+      border-radius: 10px;
+      background: #f1f6ff;
+      color: #2c5f9c;
+      font-weight: 700;
+      cursor: pointer;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+    }
+    .month-nav-text {
+      min-width: 96px;
+      text-align: center;
+      font-family: "Outfit", sans-serif;
+      font-size: 17px;
+      color: #1f4d86;
+      letter-spacing: -0.01em;
     }
 
     .weekday-row, .calendar-grid {
@@ -681,7 +840,7 @@
     }
 
     .day-cell {
-      min-height: 94px;
+      min-height: 124px;
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 8px;
@@ -698,6 +857,14 @@
     .day-cell.muted { opacity: 0.35; cursor: default; }
     .day-cell.today { border-color: #6d9be0; }
     .day-cell.selected { border-color: #2f67af; box-shadow: 0 8px 16px rgba(47, 103, 175, 0.14); }
+    .day-cell.routine-hit {
+      background: linear-gradient(180deg, #f5f9ff, #ffffff 48%);
+      border-color: #c4d9fb;
+    }
+    .day-cell.routine-full {
+      background: linear-gradient(180deg, #eaf3ff, #ffffff 52%);
+      border-color: #8eb2e5;
+    }
 
     .day-num {
       font-family: "Outfit", sans-serif;
@@ -705,15 +872,36 @@
       font-weight: 600;
     }
 
-    .day-summary {
-      font-size: 11px;
+    .day-meta-grid {
+      display: grid;
+      gap: 4px;
+    }
+
+    .day-meta {
+      font-size: 10px;
       color: #2d5a96;
       border-radius: 8px;
       background: #ecf3ff;
       border: 1px solid #cfe0ff;
-      padding: 3px 6px;
-      display: inline-block;
-      align-self: flex-start;
+      padding: 2px 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      width: 100%;
+      line-height: 1.2;
+    }
+
+    .day-meta.flag {
+      background: #eef6ea;
+      border-color: #cde8bf;
+      color: #2d6b2b;
+    }
+
+    .day-meta.flag.off {
+      background: #f3f6fb;
+      border-color: #d9e2f2;
+      color: #6c7c95;
     }
 
     .week-kpis {
@@ -752,6 +940,156 @@
 
     .day-task-list { display: grid; gap: 8px; margin-top: 10px; }
     .day-task { border: 1px solid var(--line); border-radius: 9px; padding: 8px; background: #fff; font-size: 12px; }
+    .analysis-layout {
+      margin-top: 10px;
+      display: grid;
+      gap: 14px;
+    }
+    .analysis-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .analysis-head input { width: 150px; }
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 10px;
+    }
+    .analysis-block {
+      border: 1px solid #d3e0f5;
+      border-radius: 12px;
+      background: #f9fbff;
+      padding: 10px;
+    }
+    .analysis-block h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      font-family: "Outfit", sans-serif;
+    }
+    .routine-analysis-list {
+      display: grid;
+      gap: 10px;
+    }
+    .routine-analysis-card {
+      border: 1px solid #d7e3f5;
+      border-radius: 11px;
+      background: #fff;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+    .routine-analysis-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+    .routine-analysis-head strong {
+      font-size: 14px;
+      color: #1c4478;
+    }
+    .routine-month-rate {
+      color: #24568f;
+      border: 1px solid #cfe0ff;
+      background: #eef4ff;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-weight: 600;
+    }
+    .routine-week-list {
+      display: grid;
+      gap: 6px;
+    }
+    .routine-week-line {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .routine-week-dots {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .routine-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid #bac8e0;
+      background: #d5dbe6;
+      justify-self: center;
+    }
+    .routine-dot.done {
+      border-color: #3f7ec3;
+      background: #2f67af;
+      box-shadow: 0 0 0 2px rgba(47, 103, 175, 0.16);
+    }
+    .routine-dot.empty {
+      background: transparent;
+      border-color: #e2e7f0;
+      box-shadow: none;
+    }
+    .routine-week-rate {
+      font-size: 11px;
+      color: #375d8f;
+      border: 1px solid #d5e2f7;
+      background: #f4f8ff;
+      border-radius: 999px;
+      padding: 2px 7px;
+      min-width: 78px;
+      text-align: center;
+    }
+    .analysis-days {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .analysis-day {
+      font-size: 12px;
+      border: 1px solid #cbddff;
+      color: #274d82;
+      background: #eef5ff;
+      border-radius: 999px;
+      padding: 4px 9px;
+    }
+    .analysis-day.empty {
+      border-color: #d8e2f0;
+      background: #f4f7fc;
+      color: #77849b;
+    }
+    .analysis-record-list {
+      margin-top: 8px;
+      display: grid;
+      gap: 8px;
+    }
+    .analysis-record-item {
+      border: 1px solid #d8e3f4;
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px;
+      font-size: 12px;
+      color: #2a4468;
+      line-height: 1.5;
+    }
+    .analysis-record-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #1f4f8b;
+      font-family: "Outfit", sans-serif;
+      font-size: 12px;
+    }
+    .analysis-record-item.empty {
+      color: #73829b;
+      background: #f4f7fc;
+      border-color: #d8e2f0;
+    }
     .annual-layout {
       margin-top: 10px;
       display: grid;
@@ -765,9 +1103,53 @@
       flex-wrap: wrap;
     }
     .annual-head input { width: 120px; }
-    .annual-goal {
+    .goal-list {
       margin-top: 10px;
-      min-height: 90px;
+      display: grid;
+      gap: 10px;
+    }
+    .goal-card {
+      border: 1px solid #d3e0f5;
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+    .goal-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .goal-head .mini-btn {
+      white-space: nowrap;
+      border-color: #f0c9d2;
+      color: #b23f5a;
+      background: #fff6f8;
+    }
+    .goal-title {
+      width: 100%;
+      font-weight: 600;
+      color: #1f4f8b;
+    }
+    .goal-content {
+      min-height: 88px;
+      resize: vertical;
+      margin-top: 0;
+    }
+    .goal-empty {
+      border: 1px dashed #c9d8ef;
+      border-radius: 10px;
+      padding: 10px;
+      color: #6b7f9d;
+      font-size: 12px;
+      background: #f7faff;
+    }
+    .goal-add-row {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
     }
     .annual-grid {
       display: grid;
@@ -806,9 +1188,17 @@
       .layout { grid-template-columns: 1fr 1fr; }
       .split-layout { grid-template-columns: 1fr; }
       .calendar-layout { grid-template-columns: 1fr; }
+      .analysis-layout { grid-template-columns: 1fr; }
+      .analysis-grid { grid-template-columns: 1fr; }
       .annual-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .stats { grid-template-columns: repeat(2, 1fr); }
       .hero { padding: 24px; }
+      .account-auth {
+        grid-template-columns: 1fr 1fr;
+      }
+      .account-actions {
+        grid-column: span 2;
+      }
     }
 
     @media (max-width: 760px) {
@@ -819,8 +1209,18 @@
       .btn { width: 100%; }
       .toolbar { width: 100%; }
       .toolbar .btn { width: 100%; }
+      .account-auth {
+        grid-template-columns: 1fr;
+      }
+      .account-actions {
+        grid-column: auto;
+      }
+      .account-actions .btn {
+        width: auto;
+      }
       .routine-add { grid-template-columns: 1fr; }
       .date-hub { align-items: flex-start; }
+      .date-nav { width: 100%; justify-content: flex-end; }
       .tag-manager .tag-manager-head { flex-wrap: nowrap; }
       .tag-manager .btn { width: auto; }
       .tabs {
@@ -860,47 +1260,60 @@
           <input type="file" id="importFile" accept="application/json" hidden />
         </div>
       </div>
+      <div class="account-card">
+        <div class="account-head">
+          <div class="account-user" id="authStatus">게스트 모드</div>
+          <div class="account-sync" id="syncStatus">로컬 저장 전용</div>
+        </div>
+        <div class="account-auth" id="authForm">
+          <input type="email" id="authEmail" placeholder="이메일" autocomplete="username" />
+          <input type="password" id="authPassword" placeholder="비밀번호" autocomplete="current-password" />
+          <div class="account-actions">
+            <button class="btn main small" id="loginBtn">로그인</button>
+            <button class="btn ghost small" id="signupBtn">회원가입</button>
+            <button class="btn ghost small" id="logoutBtn" hidden>로그아웃</button>
+          </div>
+        </div>
+        <p class="auth-help" id="authHelp">로그인하면 내 데이터만 불러오고 다른 사용자는 볼 수 없습니다. Firebase 설정 전에는 로컬 저장만 동작합니다.</p>
+      </div>
       <div class="stats">
         <article class="stat">
           <div class="label">선택 날짜 남은 할 일</div>
           <div class="value" id="statRemain">0</div>
         </article>
         <article class="stat">
-          <div class="label">완료율</div>
-          <div class="value" id="statDoneRate">0%</div>
-        </article>
-        <article class="stat">
-          <div class="label">Top3 지정</div>
-          <div class="value" id="statTop">-</div>
-        </article>
-        <article class="stat">
-          <div class="label">루틴 달성</div>
-          <div class="value" id="statRoutine">0/0</div>
+          <div class="label">루틴 달성율</div>
+          <div class="value" id="statRoutine">0%</div>
         </article>
       </div>
     </section>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="dashboard">Daily</button>
-      <button class="tab-btn" data-tab="calendar">Calendar · Monthly</button>
+      <button class="tab-btn" data-tab="dashboard">Daily</button>
+      <button class="tab-btn active" data-tab="calendar">Calendar</button>
+      <button class="tab-btn" data-tab="analysis">Analysis</button>
       <button class="tab-btn" data-tab="annual">Yearly</button>
     </div>
 
     <section class="date-hub">
       <div class="value" id="activeDateText">0000.00.00</div>
-      <label class="date-picker-trigger" aria-label="기록 기준일 선택">
-        📅
-        <input type="date" id="globalDatePicker" />
-      </label>
+      <div class="date-nav">
+        <button class="date-nav-btn" id="prevDateBtn" aria-label="이전 날짜">&lt;</button>
+        <label class="date-picker-trigger" aria-label="기록 기준일 선택">
+          📅
+          <input type="date" id="globalDatePicker" />
+        </label>
+        <button class="date-nav-btn" id="nextDateBtn" aria-label="다음 날짜">&gt;</button>
+      </div>
     </section>
 
-    <section class="tab-panel active" id="panel-dashboard">
+    <section class="tab-panel" id="panel-dashboard">
       <section class="layout split-layout">
         <div class="column work-column">
           <article class="card work-card" style="animation-delay: 0.05s">
             <div class="title-row">
               <div>
-                <h2>Todo List</h2>
+                <h3>Todo List</h3>
                 <p class="sub">프로젝트 태그로 분류하고, 중요한 Top3를 지정해 집중하세요.</p>
               </div>
             </div>
@@ -966,9 +1379,14 @@
           <article class="card life-card" style="animation-delay: 0.15s">
             <div class="title-row">
               <div>
-                <h3>개인 Habit Tracker</h3>
-                <p class="sub">루틴 항목 편집 + 연속 달성(streak)을 확인하세요.</p>
+                <h3>Habit Tracker</h3>
+                <p class="sub">체크는 날짜별로 분리되며, 하루가 바뀌면 자동으로 오늘 기준으로 리셋됩니다.</p>
               </div>
+            </div>
+            <div class="chip-group" id="routineFilterChips">
+              <button class="chip active" data-routine-filter="open">진행중</button>
+              <button class="chip" data-routine-filter="done">완료</button>
+              <button class="chip" data-routine-filter="all">전체</button>
             </div>
             <div class="routine-list" id="routineList"></div>
             <div class="routine-add">
@@ -989,7 +1407,7 @@
             <div class="title-row">
               <div>
                 <h3>Quick Notes</h3>
-                <p class="sub">개인 메모와 아이디어를 저장합니다.</p>
+                <p class="sub">선택한 날짜별로 다른 메모를 저장합니다.</p>
               </div>
             </div>
             <textarea id="quickNotes" style="min-height: 180px;" placeholder="메모, 아이디어, 다음 액션"></textarea>
@@ -998,58 +1416,62 @@
       </section>
     </section>
 
-    <section class="tab-panel" id="panel-calendar">
+    <section class="tab-panel active" id="panel-calendar">
       <section class="calendar-layout">
         <article class="card work-card">
           <div class="calendar-head">
             <div>
-              <h3 style="margin:0;">월간 캘린더</h3>
-              <p class="sub">날짜를 누르면 해당 일자 할 일을 확인하고 월간 리포트를 함께 볼 수 있습니다.</p>
+              <h3 style="margin:0;">Canlender</h3>
+              <p class="sub">날짜별 업무/루틴/저널/퀵노트 기록 현황을 빠르게 확인하고, 클릭하면 해당 날짜 Daily로 이동합니다.</p>
             </div>
-            <input type="month" id="calendarMonth" aria-label="캘린더 월 선택" />
+            <div class="month-nav-inline">
+              <button class="month-nav-btn" id="calendarPrevMonthBtn" aria-label="이전 월">&lt;</button>
+              <div class="month-nav-text" id="calendarMonthText">0000.00</div>
+              <button class="month-nav-btn" id="calendarNextMonthBtn" aria-label="다음 월">&gt;</button>
+            </div>
+            <input type="month" id="calendarMonth" hidden />
           </div>
           <div class="weekday-row" id="weekdayRow"></div>
           <div class="calendar-grid" id="calendarGrid"></div>
         </article>
+      </section>
+    </section>
 
-        <aside class="aside">
-          <article class="card life-card">
-            <div class="title-row">
+    <section class="tab-panel" id="panel-analysis">
+      <section class="analysis-layout">
+        <article class="card life-card">
+          <div class="analysis-head">
+            <div>
+              <h3 style="margin:0;">Analysis</h3>
+              <p class="sub">월 기준으로 루틴 달성율, 기록일, 실제 기록 내용을 한 번에 확인하세요.</p>
+            </div>
+            <div class="month-nav-inline">
+              <button class="month-nav-btn" id="analysisPrevMonthBtn" aria-label="이전 월">&lt;</button>
+              <div class="month-nav-text" id="analysisMonthText">0000.00</div>
+              <button class="month-nav-btn" id="analysisNextMonthBtn" aria-label="다음 월">&gt;</button>
+            </div>
+            <input type="month" id="analysisMonth" hidden />
+          </div>
+          <div class="analysis-grid">
+            <section class="analysis-block">
+              <h4>루틴 달성율</h4>
+              <div class="routine-analysis-list" id="analysisRoutineRows"></div>
+            </section>
+            <section class="analysis-block">
+              <h4>기록일</h4>
               <div>
-                <h3>Monthly Report</h3>
-              <p class="sub" id="monthRangeText">Selected month summary</p>
+                <p class="sub" id="analysisJournalSummary">Journal: -</p>
+                <div class="analysis-days" id="analysisJournalDays"></div>
+                <div class="analysis-record-list" id="analysisJournalEntries"></div>
               </div>
-            </div>
-            <div class="report-split">
-              <div class="report-block work">
-                <h4>Work (업무)</h4>
-                <div class="week-kpis">
-                  <div class="week-kpi"><span>할 일 완료율</span><strong id="monthTodoRate">0%</strong></div>
-                  <div class="week-kpi"><span>완료 / 총계</span><strong id="monthTodoCount">0 / 0</strong></div>
-                  <div class="week-kpi"><span>저널/스티커 기록일</span><strong id="monthWorkDays">0일</strong></div>
-                </div>
+              <div style="margin-top:10px;">
+                <p class="sub" id="analysisQuickSummary">Quick Note: -</p>
+                <div class="analysis-days" id="analysisQuickDays"></div>
+                <div class="analysis-record-list" id="analysisQuickEntries"></div>
               </div>
-              <div class="report-block life">
-                <h4>Life (루틴)</h4>
-                <div class="week-kpis">
-                  <div class="week-kpi"><span>루틴 평균 달성</span><strong id="monthRoutineAvg">0%</strong></div>
-                  <div class="week-kpi"><span>루틴 기록일</span><strong id="monthRoutineDays">0일</strong></div>
-                  <div class="week-kpi"><span>최고 streak</span><strong id="monthBestStreak">0d</strong></div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="card work-card">
-            <div class="title-row">
-              <div>
-                <h3 id="dayTaskTitle">선택 날짜 할 일</h3>
-                <p class="sub">여기서 본 날짜는 대시보드와 같은 데이터입니다.</p>
-              </div>
-            </div>
-            <div class="day-task-list" id="dayTaskList"></div>
-          </article>
-        </aside>
+            </section>
+          </div>
+        </article>
       </section>
     </section>
 
@@ -1059,20 +1481,32 @@
           <div class="annual-head">
             <div>
               <h3 style="margin:0;">Yearly</h3>
-              <p class="sub">월별 업무/루틴 흐름을 빠르게 점검하고 연간 목표를 기록하세요.</p>
+              <p class="sub">월별 퀵노트/저널 기록일과 루틴 달성율을 빠르게 확인하세요.</p>
             </div>
             <input type="number" id="annualYear" min="2000" max="2100" step="1" />
           </div>
-          <textarea id="annualGoal" class="annual-goal" placeholder="연간 목표를 작성하세요. 예: 분기별 핵심 프로젝트 완료, 개인 루틴 70% 이상 유지"></textarea>
+          <div class="goal-list" id="annualGoalList"></div>
+          <div class="goal-add-row">
+            <button class="btn main small" id="addAnnualGoalBtn">카테고리 추가</button>
+          </div>
           <div class="annual-grid" id="annualGrid"></div>
         </article>
       </section>
     </section>
   </main>
 
+  <script src="./firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
   <script>
-    const STORAGE_KEY = "focus-ledger-v2";
+    const STORAGE_KEY_PREFIX = "focus-ledger-v3";
+    const LEGACY_STORAGE_KEY = "focus-ledger-v2";
+    const STORAGE_VERSION = 3;
+    const CLOUD_COLLECTION = "plannerStates";
+    const CLOUD_SAVE_DELAY_MS = 900;
     const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+    const ROUTINE_FILTERS = ["all", "open", "done"];
 
     const fixedProjectTags = ["Personal", "Work"];
 
@@ -1095,28 +1529,59 @@
       return todayKey().slice(0, 7);
     }
 
-    const state = {
-      activeTab: "dashboard",
-      todos: [],
-      filter: "all",
-      projectFilter: "all",
-      selectedDate: todayKey(),
-      calendarMonth: thisMonthKey(),
-      annualYear: new Date().getFullYear(),
-      annualGoal: "",
-      projectTags: [...fixedProjectTags],
-      quickNotes: "",
-      routines: defaultRoutines.map((r) => ({ ...r })),
-      routineLogs: {},
-      dailyLogs: {},
-      journals: {}
+    // To enable account login/sync, inject `window.PLANNER_FIREBASE_CONFIG` with real project values.
+    const firebaseConfig = window.PLANNER_FIREBASE_CONFIG || {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
+
+    function createDefaultState() {
+      return {
+        activeTab: "calendar",
+        todos: [],
+        filter: "all",
+        projectFilter: "all",
+        routineFilter: "open",
+        selectedDate: todayKey(),
+        calendarMonth: thisMonthKey(),
+        analysisMonth: thisMonthKey(),
+        annualYear: new Date().getFullYear(),
+        annualGoal: "",
+        annualGoals: [],
+        projectTags: [...fixedProjectTags],
+        quickNotesByDate: {},
+        routines: defaultRoutines.map((r) => ({ ...r })),
+        routineLogs: {},
+        dailyLogs: {},
+        journals: {},
+        lastSeenDate: todayKey(),
+        updatedAt: 0
+      };
+    }
+
+    const state = createDefaultState();
+
+    let activeStorageKey = `${STORAGE_KEY_PREFIX}:guest`;
+    let cloudEnabled = false;
+    let cloudInitialized = false;
+    let cloudAuth = null;
+    let cloudDb = null;
+    let authUser = null;
+    let cloudSaveTimer = null;
+    let isApplyingRemoteState = false;
 
     const el = {
       tabButtons: [...document.querySelectorAll(".tab-btn")],
       tabPanels: [...document.querySelectorAll(".tab-panel")],
+      dateHub: document.querySelector(".date-hub"),
       activeDateText: document.getElementById("activeDateText"),
       globalDatePicker: document.getElementById("globalDatePicker"),
+      prevDateBtn: document.getElementById("prevDateBtn"),
+      nextDateBtn: document.getElementById("nextDateBtn"),
       todoInput: document.getElementById("todoInput"),
       todoTagSelect: document.getElementById("todoTagSelect"),
       topTaskText: document.getElementById("topTaskText"),
@@ -1128,6 +1593,7 @@
       todoList: document.getElementById("todoList"),
       filterChips: document.getElementById("filterChips"),
       projectFilterChips: document.getElementById("projectFilterChips"),
+      routineFilterChips: document.getElementById("routineFilterChips"),
       journalSticker: document.getElementById("journalSticker"),
       journalBody: document.getElementById("journalBody"),
       quickNotes: document.getElementById("quickNotes"),
@@ -1138,27 +1604,41 @@
       routineBar: document.getElementById("routineBar"),
       routineText: document.getElementById("routineText"),
       statRemain: document.getElementById("statRemain"),
-      statDoneRate: document.getElementById("statDoneRate"),
-      statTop: document.getElementById("statTop"),
       statRoutine: document.getElementById("statRoutine"),
       exportBtn: document.getElementById("exportBtn"),
       importBtn: document.getElementById("importBtn"),
       importFile: document.getElementById("importFile"),
+      calendarMonthText: document.getElementById("calendarMonthText"),
+      calendarPrevMonthBtn: document.getElementById("calendarPrevMonthBtn"),
+      calendarNextMonthBtn: document.getElementById("calendarNextMonthBtn"),
       calendarMonth: document.getElementById("calendarMonth"),
+      analysisMonthText: document.getElementById("analysisMonthText"),
+      analysisPrevMonthBtn: document.getElementById("analysisPrevMonthBtn"),
+      analysisNextMonthBtn: document.getElementById("analysisNextMonthBtn"),
+      analysisMonth: document.getElementById("analysisMonth"),
       weekdayRow: document.getElementById("weekdayRow"),
       calendarGrid: document.getElementById("calendarGrid"),
       annualYear: document.getElementById("annualYear"),
-      annualGoal: document.getElementById("annualGoal"),
+      annualGoalList: document.getElementById("annualGoalList"),
+      addAnnualGoalBtn: document.getElementById("addAnnualGoalBtn"),
       annualGrid: document.getElementById("annualGrid"),
-      monthRangeText: document.getElementById("monthRangeText"),
-      monthTodoRate: document.getElementById("monthTodoRate"),
-      monthTodoCount: document.getElementById("monthTodoCount"),
-      monthWorkDays: document.getElementById("monthWorkDays"),
-      monthRoutineAvg: document.getElementById("monthRoutineAvg"),
-      monthRoutineDays: document.getElementById("monthRoutineDays"),
-      monthBestStreak: document.getElementById("monthBestStreak"),
+      analysisRoutineRows: document.getElementById("analysisRoutineRows"),
+      analysisJournalSummary: document.getElementById("analysisJournalSummary"),
+      analysisJournalDays: document.getElementById("analysisJournalDays"),
+      analysisJournalEntries: document.getElementById("analysisJournalEntries"),
+      analysisQuickSummary: document.getElementById("analysisQuickSummary"),
+      analysisQuickDays: document.getElementById("analysisQuickDays"),
+      analysisQuickEntries: document.getElementById("analysisQuickEntries"),
       dayTaskTitle: document.getElementById("dayTaskTitle"),
-      dayTaskList: document.getElementById("dayTaskList")
+      dayTaskList: document.getElementById("dayTaskList"),
+      authStatus: document.getElementById("authStatus"),
+      syncStatus: document.getElementById("syncStatus"),
+      authHelp: document.getElementById("authHelp"),
+      authEmail: document.getElementById("authEmail"),
+      authPassword: document.getElementById("authPassword"),
+      loginBtn: document.getElementById("loginBtn"),
+      signupBtn: document.getElementById("signupBtn"),
+      logoutBtn: document.getElementById("logoutBtn")
     };
 
     function emptyJournal() {
@@ -1166,6 +1646,51 @@
         sticker: "",
         journalBody: ""
       };
+    }
+
+    function isDoneValue(value) {
+      if (value === true || value === 1) return true;
+      if (typeof value === "string") {
+        const normalized = value.trim().toLowerCase();
+        return normalized === "true" || normalized === "1" || normalized === "yes" || normalized === "y";
+      }
+      return false;
+    }
+
+    function createAnnualGoalCategory(seed = Date.now()) {
+      return {
+        id: `goal-${seed}-${Math.random().toString(16).slice(2, 6)}`,
+        title: "",
+        body: ""
+      };
+    }
+
+    function normalizeAnnualGoals(input) {
+      if (!Array.isArray(input)) return [];
+      return input
+        .map((item, index) => {
+          if (!item || typeof item !== "object") return null;
+          return {
+            id: String(item.id || `goal-${Date.now()}-${index}`),
+            title: String(item.title || "").trim(),
+            body: String(item.body || "")
+          };
+        })
+        .filter(Boolean);
+    }
+
+    function normalizeRoutineLogs(input) {
+      const source = input && typeof input === "object" ? input : {};
+      const normalized = {};
+      Object.entries(source).forEach(([dKey, day]) => {
+        if (!isDateKey(dKey) || !day || typeof day !== "object") return;
+        const dayNormalized = {};
+        Object.entries(day).forEach(([rid, value]) => {
+          dayNormalized[rid] = isDoneValue(value);
+        });
+        normalized[dKey] = dayNormalized;
+      });
+      return normalized;
     }
 
     function getJournalForDate(dKey) {
@@ -1180,6 +1705,21 @@
       state.journals[dKey] = journal;
     }
 
+    function getQuickNotesForDate(dKey) {
+      const value = state.quickNotesByDate[dKey];
+      return typeof value === "string" ? value : "";
+    }
+
+    function saveQuickNotesForSelectedDate(value) {
+      const dKey = state.selectedDate;
+      const next = String(value || "");
+      if (next.trim()) {
+        state.quickNotesByDate[dKey] = next;
+        return;
+      }
+      delete state.quickNotesByDate[dKey];
+    }
+
     function refreshDailyLogForSelectedDate() {
       const dKey = state.selectedDate;
       const journal = getJournalForDate(dKey);
@@ -1191,49 +1731,352 @@
       };
     }
 
-    function save() {
+    function isDateKey(value) {
+      return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ""));
+    }
+
+    function storageKeyForUid(uid) {
+      return `${STORAGE_KEY_PREFIX}:${uid || "guest"}`;
+    }
+
+    function resetState(nextState) {
+      const base = createDefaultState();
+      Object.keys(state).forEach((key) => delete state[key]);
+      Object.assign(state, base, nextState || {});
+    }
+
+    function parseStoredPayload(payload) {
+      if (!payload || typeof payload !== "object") return null;
+      return payload.data && typeof payload.data === "object" ? payload.data : payload;
+    }
+
+    function extractUpdatedAt(payload) {
+      if (!payload || typeof payload !== "object") return 0;
+      const direct = Number(payload.updatedAt) || 0;
+      if (direct) return direct;
+      if (payload.data && typeof payload.data === "object") {
+        return Number(payload.data.updatedAt) || 0;
+      }
+      return 0;
+    }
+
+    function readRawLocalPayload(storageKey = activeStorageKey) {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : null;
+      } catch (err) {
+        console.warn("저장 데이터 로드 실패", err);
+        return null;
+      }
+    }
+
+    function shouldResetToToday(parsed, forceToday) {
+      if (forceToday) return true;
+      const today = todayKey();
+      const savedDay = isDateKey(parsed.lastSeenDate) ? parsed.lastSeenDate : "";
+      if (!savedDay) {
+        return isDateKey(parsed.selectedDate) && parsed.selectedDate !== today;
+      }
+      return savedDay !== today;
+    }
+
+    function applyLoadedState(rawPayload, options = {}) {
+      const parsed = parseStoredPayload(rawPayload);
+      if (!parsed || typeof parsed !== "object") {
+        resetState();
+        return;
+      }
+
+      const today = todayKey();
+      const forceToday = shouldResetToToday(parsed, Boolean(options.forceToday));
+      const selectedDate = forceToday
+        ? today
+        : (isDateKey(parsed.selectedDate) ? parsed.selectedDate : today);
+
+      const quickNotesByDate = parsed.quickNotesByDate && typeof parsed.quickNotesByDate === "object"
+        ? { ...parsed.quickNotesByDate }
+        : {};
+
+      const legacyQuick = typeof parsed.quickNotes === "string" ? parsed.quickNotes : "";
+      if (legacyQuick.trim()) {
+        const legacyDate = isDateKey(parsed.selectedDate) ? parsed.selectedDate : today;
+        if (!quickNotesByDate[legacyDate]) quickNotesByDate[legacyDate] = legacyQuick;
+      }
+
+      const next = {
+        activeTab: options.forceLandingCalendar ? "calendar" : (parsed.activeTab || "calendar"),
+        todos: Array.isArray(parsed.todos) ? parsed.todos : [],
+        filter: ["all", "open", "done"].includes(parsed.filter) ? parsed.filter : "all",
+        projectFilter: parsed.projectFilter || "all",
+        routineFilter: ROUTINE_FILTERS.includes(parsed.routineFilter) ? parsed.routineFilter : "open",
+        selectedDate,
+        calendarMonth: forceToday
+          ? today.slice(0, 7)
+          : (typeof parsed.calendarMonth === "string" && parsed.calendarMonth ? parsed.calendarMonth : selectedDate.slice(0, 7)),
+        analysisMonth: typeof parsed.analysisMonth === "string" && parsed.analysisMonth
+          ? parsed.analysisMonth
+          : (typeof parsed.calendarMonth === "string" && parsed.calendarMonth ? parsed.calendarMonth : today.slice(0, 7)),
+        annualYear: Number(parsed.annualYear) || new Date(selectedDate).getFullYear(),
+        annualGoal: parsed.annualGoal || "",
+        annualGoals: normalizeAnnualGoals(parsed.annualGoals),
+        projectTags: Array.isArray(parsed.projectTags) && parsed.projectTags.length ? parsed.projectTags : [...fixedProjectTags],
+        quickNotesByDate,
+        routines: Array.isArray(parsed.routines) && parsed.routines.length
+          ? parsed.routines.map((r) => ({ ...r }))
+          : defaultRoutines.map((r) => ({ ...r })),
+        routineLogs: normalizeRoutineLogs(parsed.routineLogs),
+        dailyLogs: parsed.dailyLogs && typeof parsed.dailyLogs === "object" ? parsed.dailyLogs : {},
+        journals: parsed.journals && typeof parsed.journals === "object" ? parsed.journals : {},
+        lastSeenDate: today,
+        updatedAt: Number(parsed.updatedAt) || 0
+      };
+
+      const legacyExists = parsed.journalWork || parsed.journalBody || parsed.winOfDay;
+      if (legacyExists && !next.journals[today]) {
+        next.journals[today] = {
+          sticker: "",
+          journalBody: parsed.journalBody || parsed.journalWork || parsed.winOfDay || ""
+        };
+      }
+      if (!next.annualGoals.length && String(next.annualGoal || "").trim()) {
+        next.annualGoals.push({
+          ...createAnnualGoalCategory(),
+          title: "기본 목표",
+          body: String(next.annualGoal || "")
+        });
+      }
+      next.annualGoal = "";
+
+      resetState(next);
+      normalizeTags();
+      normalizeTodos();
+      syncRoutinesFromSelectedDate();
+    }
+
+    function buildStateSnapshot() {
       persistRoutinesForSelectedDate();
       refreshDailyLogForSelectedDate();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      state.lastSeenDate = todayKey();
+      state.updatedAt = Date.now();
+      return {
+        version: STORAGE_VERSION,
+        updatedAt: state.updatedAt,
+        activeTab: state.activeTab,
+        todos: state.todos,
+        filter: state.filter,
+        projectFilter: state.projectFilter,
+        routineFilter: state.routineFilter,
+        selectedDate: state.selectedDate,
+        calendarMonth: state.calendarMonth,
+        analysisMonth: state.analysisMonth,
+        annualYear: state.annualYear,
+        annualGoal: "",
+        annualGoals: state.annualGoals,
+        projectTags: state.projectTags,
+        quickNotesByDate: state.quickNotesByDate,
+        routines: state.routines,
+        routineLogs: state.routineLogs,
+        dailyLogs: state.dailyLogs,
+        journals: state.journals,
+        lastSeenDate: state.lastSeenDate
+      };
+    }
+
+    function saveLocalSnapshot(snapshot) {
+      try {
+        localStorage.setItem(activeStorageKey, JSON.stringify(snapshot));
+      } catch (err) {
+        console.warn("로컬 저장 실패", err);
+      }
+    }
+
+    function setSyncStatus(text, mode = "") {
+      if (!el.syncStatus) return;
+      el.syncStatus.textContent = text;
+      el.syncStatus.classList.toggle("is-live", mode === "live");
+      el.syncStatus.classList.toggle("is-saving", mode === "saving");
+    }
+
+    function queueCloudSave(snapshot) {
+      if (!cloudEnabled || !cloudInitialized || !cloudDb || !authUser || isApplyingRemoteState) return;
+      if (cloudSaveTimer) clearTimeout(cloudSaveTimer);
+      setSyncStatus("클라우드 저장 대기...", "saving");
+      cloudSaveTimer = window.setTimeout(async () => {
+        try {
+          setSyncStatus("클라우드 저장 중...", "saving");
+          await cloudDb.collection(CLOUD_COLLECTION).doc(authUser.uid).set({
+            version: STORAGE_VERSION,
+            updatedAt: snapshot.updatedAt,
+            data: snapshot
+          }, { merge: true });
+          setSyncStatus("클라우드 동기화 활성", "live");
+        } catch (err) {
+          console.warn("클라우드 저장 실패", err);
+          setSyncStatus("클라우드 저장 실패", "");
+        }
+      }, CLOUD_SAVE_DELAY_MS);
+    }
+
+    function save(options = {}) {
+      const snapshot = buildStateSnapshot();
+      saveLocalSnapshot(snapshot);
+      if (!options.skipCloud) queueCloudSave(snapshot);
+      if (el.analysisRoutineRows) renderAnalysis();
       if (el.annualGrid) renderAnnualOverview();
     }
 
-    function load() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed !== "object") return;
-
-        state.activeTab = parsed.activeTab || "dashboard";
-        state.todos = Array.isArray(parsed.todos) ? parsed.todos : [];
-        state.filter = ["all", "open", "done"].includes(parsed.filter) ? parsed.filter : "all";
-        state.projectFilter = parsed.projectFilter || "all";
-        state.selectedDate = parsed.selectedDate || todayKey();
-        state.calendarMonth = parsed.calendarMonth || thisMonthKey();
-        state.annualYear = Number(parsed.annualYear) || new Date(state.selectedDate).getFullYear();
-        state.annualGoal = parsed.annualGoal || "";
-        state.projectTags = Array.isArray(parsed.projectTags) && parsed.projectTags.length ? parsed.projectTags : [...fixedProjectTags];
-        state.quickNotes = parsed.quickNotes || "";
-        state.routines = Array.isArray(parsed.routines) && parsed.routines.length
-          ? parsed.routines
-          : defaultRoutines.map((r) => ({ ...r }));
-        state.routineLogs = parsed.routineLogs && typeof parsed.routineLogs === "object" ? parsed.routineLogs : {};
-        state.dailyLogs = parsed.dailyLogs && typeof parsed.dailyLogs === "object" ? parsed.dailyLogs : {};
-        state.journals = parsed.journals && typeof parsed.journals === "object" ? parsed.journals : {};
-        normalizeTags();
-        normalizeTodos();
-        syncRoutinesFromSelectedDate();
-
-        const legacyExists = parsed.journalWork || parsed.journalBody || parsed.winOfDay;
-        if (legacyExists && !state.journals[todayKey()]) {
-          state.journals[todayKey()] = {
-            sticker: "",
-            journalBody: parsed.journalBody || parsed.journalWork || parsed.winOfDay || ""
-          };
+    function load(options = {}) {
+      const payload = readRawLocalPayload(activeStorageKey);
+      if (!payload && options.allowLegacyGuest) {
+        const legacy = readRawLocalPayload(LEGACY_STORAGE_KEY);
+        if (legacy) {
+          applyLoadedState(legacy, options);
+          save({ skipCloud: true });
+          return true;
         }
+      }
+      if (!payload) {
+        resetState();
+        return false;
+      }
+      applyLoadedState(payload, options);
+      return true;
+    }
+
+    function renderAll() {
+      syncInputs();
+      renderTodos();
+      renderRoutines();
+      renderCalendar();
+      renderSelectedDayTasks();
+      renderMonthlyReport();
+      renderAnalysis();
+      renderAnnualGoals();
+      renderAnnualOverview();
+    }
+
+    function resetToTodayIfDateRolledOver() {
+      const today = todayKey();
+      if (state.lastSeenDate === today) return;
+      state.selectedDate = today;
+      state.calendarMonth = today.slice(0, 7);
+      syncRoutinesFromSelectedDate();
+      save();
+      renderAll();
+    }
+
+    function isFirebaseConfigValid(config) {
+      if (!config || typeof config !== "object") return false;
+      const required = ["apiKey", "authDomain", "projectId", "appId"];
+      return required.every((key) => {
+        const value = String(config[key] || "");
+        return value && !value.includes("YOUR_");
+      });
+    }
+
+    function updateAuthUI() {
+      const loggedIn = Boolean(authUser);
+      if (el.loginBtn) el.loginBtn.hidden = loggedIn || !cloudEnabled;
+      if (el.signupBtn) el.signupBtn.hidden = loggedIn || !cloudEnabled;
+      if (el.logoutBtn) el.logoutBtn.hidden = !loggedIn || !cloudEnabled;
+      if (el.authEmail) el.authEmail.disabled = loggedIn || !cloudEnabled;
+      if (el.authPassword) el.authPassword.disabled = loggedIn || !cloudEnabled;
+
+      if (!cloudEnabled) {
+        el.authStatus.textContent = "게스트 모드";
+        el.authHelp.textContent = "Firebase 설정 후 로그인하면 내 계정 데이터가 기기 간 동기화됩니다.";
+        setSyncStatus("로컬 저장 전용");
+        return;
+      }
+
+      if (!loggedIn) {
+        el.authStatus.textContent = "게스트 모드";
+        el.authHelp.textContent = "로그인하면 내 데이터만 불러오고, 다른 사용자는 내 내용을 볼 수 없습니다.";
+        setSyncStatus("로그인 필요");
+        return;
+      }
+
+      const label = authUser.email || "내 계정";
+      el.authStatus.textContent = `로그인: ${label}`;
+      el.authHelp.textContent = "현재 계정 전용 데이터가 열려 있습니다.";
+    }
+
+    function toAuthErrorMessage(err) {
+      const code = err && err.code ? String(err.code) : "";
+      if (code.includes("invalid-email")) return "이메일 형식이 올바르지 않습니다.";
+      if (code.includes("user-not-found")) return "등록되지 않은 계정입니다.";
+      if (code.includes("wrong-password")) return "비밀번호가 올바르지 않습니다.";
+      if (code.includes("email-already-in-use")) return "이미 가입된 이메일입니다.";
+      if (code.includes("weak-password")) return "비밀번호는 6자 이상으로 입력해 주세요.";
+      if (code.includes("too-many-requests")) return "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.";
+      return "인증 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.";
+    }
+
+    async function handleAuthStateChanged(user) {
+      authUser = user || null;
+      activeStorageKey = storageKeyForUid(authUser ? authUser.uid : "guest");
+
+      if (!authUser) {
+        load({ allowLegacyGuest: true, forceToday: false, forceLandingCalendar: true });
+        updateAuthUI();
+        renderAll();
+        return;
+      }
+
+      load({ allowLegacyGuest: false, forceToday: false, forceLandingCalendar: true });
+      renderAll();
+      updateAuthUI();
+      setSyncStatus("클라우드 불러오는 중...", "saving");
+
+      try {
+        const doc = await cloudDb.collection(CLOUD_COLLECTION).doc(authUser.uid).get();
+        const cloudPayload = doc.exists ? doc.data() : null;
+        const localPayload = readRawLocalPayload(activeStorageKey);
+        const cloudUpdatedAt = extractUpdatedAt(cloudPayload);
+        const localUpdatedAt = extractUpdatedAt(localPayload);
+
+        if (cloudPayload && cloudUpdatedAt >= localUpdatedAt) {
+          isApplyingRemoteState = true;
+          applyLoadedState(cloudPayload, { forceToday: false });
+          isApplyingRemoteState = false;
+          save({ skipCloud: true });
+          renderAll();
+        } else if (!cloudPayload || localUpdatedAt > cloudUpdatedAt) {
+          save();
+        }
+
+        setSyncStatus("클라우드 동기화 활성", "live");
       } catch (err) {
-        console.warn("저장 데이터 로드 실패", err);
+        console.warn("클라우드 로드 실패", err);
+        setSyncStatus("클라우드 연결 실패", "");
+      }
+    }
+
+    function initCloud() {
+      if (!isFirebaseConfigValid(firebaseConfig) || !window.firebase) {
+        cloudEnabled = false;
+        cloudInitialized = false;
+        updateAuthUI();
+        return;
+      }
+
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        cloudAuth = firebase.auth();
+        cloudDb = firebase.firestore();
+        cloudEnabled = true;
+        cloudInitialized = true;
+        updateAuthUI();
+        cloudAuth.onAuthStateChanged((user) => {
+          handleAuthStateChanged(user);
+        });
+      } catch (err) {
+        console.warn("Firebase 초기화 실패", err);
+        cloudEnabled = false;
+        cloudInitialized = false;
+        updateAuthUI();
       }
     }
 
@@ -1286,7 +2129,7 @@
     function syncRoutinesFromSelectedDate() {
       const day = state.routineLogs[state.selectedDate] || {};
       state.routines.forEach((r) => {
-        r.done = Boolean(day[r.id]);
+        r.done = isDoneValue(day[r.id]);
       });
     }
 
@@ -1295,19 +2138,6 @@
       state.routines.forEach((r) => {
         state.routineLogs[state.selectedDate][r.id] = Boolean(r.done);
       });
-    }
-
-    function getRoutineStreak(rid) {
-      let streak = 0;
-      const cursor = new Date(`${state.selectedDate}T00:00:00`);
-      while (true) {
-        const key = dateKey(cursor);
-        const done = Boolean(state.routineLogs[key] && state.routineLogs[key][rid]);
-        if (!done) break;
-        streak += 1;
-        cursor.setDate(cursor.getDate() - 1);
-      }
-      return streak;
     }
 
     function renderTagOptions() {
@@ -1328,9 +2158,19 @@
     }
 
     function setActiveTab(tab, persist = true) {
+      const prevTab = state.activeTab;
       state.activeTab = tab;
+      if (tab === "analysis" && prevTab !== "analysis") {
+        state.analysisMonth = state.calendarMonth;
+      }
       el.tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === tab));
       el.tabPanels.forEach((panel) => panel.classList.toggle("active", panel.id === `panel-${tab}`));
+      if (el.dateHub) {
+        el.dateHub.classList.toggle("is-hidden", tab !== "dashboard");
+      }
+      if (el.analysisMonth) el.analysisMonth.value = state.analysisMonth;
+      if (el.analysisMonthText) el.analysisMonthText.textContent = formatMonthDot(state.analysisMonth);
+      if (tab === "analysis") renderAnalysis();
       if (persist) save();
     }
 
@@ -1392,16 +2232,12 @@
       const total = dayTodos.length;
       const done = dayTodos.filter((t) => t.done).length;
       const remain = total - done;
-      const doneRate = total ? Math.round((done / total) * 100) : 0;
-
-      const topCount = dayTodos.filter((t) => t.topOrder > 0).length;
       const routineTotal = state.routines.length;
       const routineDone = state.routines.filter((r) => r.done).length;
+      const routineRate = routineTotal ? Math.round((routineDone / routineTotal) * 100) : 0;
 
       el.statRemain.textContent = String(remain);
-      el.statDoneRate.textContent = `${doneRate}%`;
-      el.statTop.textContent = `${topCount}/3`;
-      el.statRoutine.textContent = `${routineDone}/${routineTotal}`;
+      el.statRoutine.textContent = `${routineRate}%`;
     }
 
     function renderRoutines() {
@@ -1409,19 +2245,30 @@
       const total = state.routines.length;
       const done = state.routines.filter((r) => r.done).length;
       const ratio = total ? Math.round((done / total) * 100) : 0;
+      const routines = state.routines.filter((routine) => {
+        if (state.routineFilter === "open") return !routine.done;
+        if (state.routineFilter === "done") return routine.done;
+        return true;
+      });
 
-      el.routineList.innerHTML = state.routines.map((r) => `
-        <div class="routine-item" data-rid="${r.id}">
-          <div>
-            <span class="streak-badge">${getRoutineStreak(r.id)}d streak</span>
-            <input class="routine-name" type="text" value="${escapeHTML(r.name)}" aria-label="루틴 이름">
+      if (!routines.length) {
+        const emptyText = state.routineFilter === "open"
+          ? "진행중 루틴이 없습니다."
+          : (state.routineFilter === "done" ? "완료된 루틴이 없습니다." : "등록된 루틴이 없습니다.");
+        el.routineList.innerHTML = `<div class="routine-empty">${emptyText}</div>`;
+      } else {
+        el.routineList.innerHTML = routines.map((r) => `
+          <div class="routine-item ${r.done ? "done" : ""}" data-rid="${r.id}">
+            <div class="routine-main">
+              <input class="routine-name" type="text" value="${escapeHTML(r.name)}" aria-label="루틴 이름">
+            </div>
+            <div class="routine-actions">
+              <button class="mini-btn" data-toggle-routine="${r.id}">${r.done ? "복원" : "완료"}</button>
+              <button class="mini-btn" data-delete-routine="${r.id}">삭제</button>
+            </div>
           </div>
-          <div class="routine-actions">
-            <input type="checkbox" data-rid="${r.id}" ${r.done ? "checked" : ""} aria-label="${escapeHTML(r.name)} 완료">
-            <button class="mini-btn" data-delete-routine="${r.id}">삭제</button>
-          </div>
-        </div>
-      `).join("");
+        `).join("");
+      }
 
       el.routineBar.style.width = `${ratio}%`;
       el.routineText.textContent = `오늘 루틴 달성률 ${ratio}%`;
@@ -1436,16 +2283,23 @@
       renderTagOptions();
       renderTagList();
       renderProjectFilters();
-      el.quickNotes.value = state.quickNotes;
-      el.calendarMonth.value = state.calendarMonth;
+      el.quickNotes.value = getQuickNotesForDate(state.selectedDate);
+      if (el.calendarMonth) el.calendarMonth.value = state.calendarMonth;
+      if (el.calendarMonthText) el.calendarMonthText.textContent = formatMonthDot(state.calendarMonth);
+      if (el.analysisMonth) el.analysisMonth.value = state.analysisMonth;
+      if (el.analysisMonthText) el.analysisMonthText.textContent = formatMonthDot(state.analysisMonth);
       el.annualYear.value = String(state.annualYear);
-      el.annualGoal.value = state.annualGoal || "";
 
       [...el.filterChips.querySelectorAll(".chip")].forEach((chip) => {
         chip.classList.toggle("active", chip.dataset.filter === state.filter);
       });
+      if (el.routineFilterChips) {
+        [...el.routineFilterChips.querySelectorAll(".chip")].forEach((chip) => {
+          chip.classList.toggle("active", chip.dataset.routineFilter === state.routineFilter);
+        });
+      }
 
-      setActiveTab(state.activeTab || "dashboard", false);
+      setActiveTab(state.activeTab || "calendar", false);
 
       [...el.journalSticker.querySelectorAll(".sticker-btn")].forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.sticker === journal.sticker);
@@ -1507,6 +2361,7 @@
       el.routineInput.value = "";
       save();
       renderRoutines();
+      renderCalendar();
       renderMonthlyReport();
     }
 
@@ -1528,6 +2383,7 @@
       });
       save();
       renderRoutines();
+      renderCalendar();
       renderMonthlyReport();
     }
 
@@ -1551,15 +2407,101 @@
       return `${y}-${m}-${d}`;
     }
 
+    function isMonthKey(value) {
+      return /^\d{4}-\d{2}$/.test(String(value || ""));
+    }
+
+    function formatMonthDot(monthKey) {
+      if (!isMonthKey(monthKey)) return "";
+      const [y, m] = monthKey.split("-");
+      return `${y}.${m}`;
+    }
+
+    function shiftMonthKey(monthKey, offset) {
+      if (!isMonthKey(monthKey)) return thisMonthKey();
+      const [y, m] = monthKey.split("-").map(Number);
+      const d = new Date(y, (m - 1) + offset, 1);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function setCalendarMonth(monthKey, persist = true) {
+      if (!isMonthKey(monthKey)) return;
+      state.calendarMonth = monthKey;
+      if (el.calendarMonth) el.calendarMonth.value = monthKey;
+      if (el.calendarMonthText) el.calendarMonthText.textContent = formatMonthDot(monthKey);
+      if (persist) save();
+      renderCalendar();
+    }
+
+    function setAnalysisMonth(monthKey, persist = true) {
+      if (!isMonthKey(monthKey)) return;
+      state.analysisMonth = monthKey;
+      if (el.analysisMonth) el.analysisMonth.value = monthKey;
+      if (el.analysisMonthText) el.analysisMonthText.textContent = formatMonthDot(monthKey);
+      if (persist) save();
+      renderAnalysis();
+    }
+
+    function getSundayWeekNumber(dateObj) {
+      const yearStart = new Date(dateObj.getFullYear(), 0, 1);
+      const firstSundayOffset = (7 - yearStart.getDay()) % 7;
+      const firstSunday = new Date(dateObj.getFullYear(), 0, 1 + firstSundayOffset);
+      if (dateObj < firstSunday) return 1;
+      const diff = dateObj.getTime() - firstSunday.getTime();
+      return Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
+    }
+
+    function shiftDateByDays(dKey, offsetDays) {
+      const d = new Date(`${dKey}T00:00:00`);
+      d.setDate(d.getDate() + offsetDays);
+      return dateKey(d);
+    }
+
+    function hasJournalRecord(dKey) {
+      const journal = getJournalForDate(dKey);
+      return Boolean((journal.journalBody || "").trim() || journal.sticker);
+    }
+
+    function hasQuickNoteRecord(dKey) {
+      return Boolean(getQuickNotesForDate(dKey).trim());
+    }
+
+    function getRoutineDoneCountForDate(dKey) {
+      const day = state.routineLogs[dKey] || {};
+      return Object.values(day).filter((value) => isDoneValue(value)).length;
+    }
+
+    function moveToDate(dKey, targetTab = null) {
+      if (!isDateKey(dKey)) return;
+      state.selectedDate = dKey;
+      state.calendarMonth = dKey.slice(0, 7);
+      if (targetTab) setActiveTab(targetTab, false);
+      syncRoutinesFromSelectedDate();
+      save();
+      syncInputs();
+      renderTodos();
+      renderRoutines();
+      renderCalendar();
+      renderSelectedDayTasks();
+      renderMonthlyReport();
+      renderAnalysis();
+    }
+
     function renderWeekdayRow() {
       el.weekdayRow.innerHTML = WEEK_LABELS.map((d) => `<div class="weekday">${d}</div>`).join("");
     }
 
-    function getDayCountSummary(dKey) {
+    function getDayCalendarSummary(dKey) {
       const dayTodos = state.todos.filter((t) => t.dueDate === dKey);
-      const total = dayTodos.length;
-      const done = dayTodos.filter((t) => t.done).length;
-      return { total, done };
+      const dayRoutine = state.routineLogs[dKey] || {};
+      const routineTotal = state.routines.length || Object.keys(dayRoutine).length;
+      return {
+        todoCount: dayTodos.length,
+        routineDone: getRoutineDoneCountForDate(dKey),
+        routineTotal,
+        journalLogged: hasJournalRecord(dKey),
+        quickLogged: hasQuickNoteRecord(dKey)
+      };
     }
 
     function renderCalendar() {
@@ -1575,15 +2517,25 @@
 
       for (let day = 1; day <= lastDay; day++) {
         const dKey = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        const summary = getDayCountSummary(dKey);
+        const summary = getDayCalendarSummary(dKey);
         const isToday = dKey === todayKey();
         const isSelected = dKey === state.selectedDate;
+        const routineClass = summary.routineDone > 0
+          ? (summary.routineTotal > 0 && summary.routineDone === summary.routineTotal ? "routine-full" : "routine-hit")
+          : "";
 
-        const summaryText = summary.total ? `<span class="day-summary">${summary.done}/${summary.total} 완료</span>` : "";
+        const metaHtml = `
+          <div class="day-meta-grid">
+            <span class="day-meta">업무 ${summary.todoCount}건</span>
+            <span class="day-meta">루틴 ${summary.routineDone}/${summary.routineTotal}</span>
+            <span class="day-meta flag ${summary.journalLogged ? "" : "off"}">저널 ${summary.journalLogged ? "기록" : "없음"}</span>
+            <span class="day-meta flag ${summary.quickLogged ? "" : "off"}">노트 ${summary.quickLogged ? "기록" : "없음"}</span>
+          </div>
+        `;
         cells.push(`
-          <button class="day-cell ${isToday ? "today" : ""} ${isSelected ? "selected" : ""}" data-date="${dKey}">
+          <button class="day-cell ${isToday ? "today" : ""} ${isSelected ? "selected" : ""} ${routineClass}" data-date="${dKey}">
             <span class="day-num">${day}</span>
-            ${summaryText}
+            ${metaHtml}
           </button>
         `);
       }
@@ -1592,6 +2544,7 @@
     }
 
     function renderSelectedDayTasks() {
+      if (!el.dayTaskTitle || !el.dayTaskList) return;
       const dKey = state.selectedDate;
       const dayTodos = state.todos.filter((t) => t.dueDate === dKey);
       const journal = getJournalForDate(dKey);
@@ -1611,43 +2564,195 @@
     }
 
     function renderMonthlyReport() {
-      const [year, month] = state.calendarMonth.split("-").map(Number);
+      // Monthly report UI removed from analysis tab.
+    }
+
+    function toMultilineHTML(text) {
+      return escapeHTML(String(text || "")).replaceAll("\n", "<br>");
+    }
+
+    function renderAnalysis() {
+      if (!el.analysisRoutineRows || !el.analysisJournalSummary || !el.analysisJournalDays || !el.analysisJournalEntries || !el.analysisQuickSummary || !el.analysisQuickDays || !el.analysisQuickEntries) {
+        return;
+      }
+
+      const [year, month] = state.analysisMonth.split("-").map(Number);
+      if (!year || !month) return;
+
       const monthPrefix = `${year}-${String(month).padStart(2, "0")}-`;
-      const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
-      const monthEnd = `${year}-${String(month).padStart(2, "0")}-${String(new Date(year, month, 0).getDate()).padStart(2, "0")}`;
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const startWeekday = new Date(year, month - 1, 1).getDay();
+      const weekCount = Math.ceil((startWeekday + daysInMonth) / 7);
 
-      const monthTodos = state.todos.filter((t) => t.dueDate && t.dueDate.startsWith(monthPrefix));
-      const todoTotal = monthTodos.length;
-      const todoDone = monthTodos.filter((t) => t.done).length;
-      const todoRate = todoTotal ? Math.round((todoDone / todoTotal) * 100) : 0;
+      if (!state.routines.length) {
+        el.analysisRoutineRows.innerHTML = '<div class="analysis-record-item empty">루틴 항목이 없습니다.</div>';
+      } else {
+        el.analysisRoutineRows.innerHTML = state.routines.map((routine) => {
+          const weekLines = [];
+          let monthlyDone = 0;
 
-      const monthLogKeys = Object.keys(state.dailyLogs).filter((k) => k.startsWith(monthPrefix));
-      const workLoggedDays = monthLogKeys.filter((k) => Boolean(state.dailyLogs[k] && state.dailyLogs[k].workLogged)).length;
+          for (let w = 0; w < weekCount; w++) {
+            const dots = [];
+            let weekDone = 0;
+            let weekTotal = 0;
+            let firstDate = null;
 
-      const monthRoutineEntries = Object.entries(state.routineLogs).filter(([k]) => k.startsWith(monthPrefix));
-      const routineLoggedDays = monthRoutineEntries.filter(([, day]) => Object.values(day || {}).some(Boolean)).length;
+            for (let i = 0; i < 7; i++) {
+              const cellIndex = (w * 7) + i;
+              const day = (cellIndex - startWeekday) + 1;
+              if (day < 1 || day > daysInMonth) {
+                dots.push('<span class="routine-dot empty"></span>');
+                continue;
+              }
 
-      const routineRates = monthRoutineEntries
-        .filter(([, day]) => Object.values(day || {}).some(Boolean))
-        .map(([, day]) => {
-          const total = state.routines.length || 1;
-          const done = Object.values(day || {}).filter(Boolean).length;
-          return Math.round((done / total) * 100);
-        });
-      const routineAvg = routineRates.length ? Math.round(routineRates.reduce((a, b) => a + b, 0) / routineRates.length) : 0;
+              const dKey = `${monthPrefix}${String(day).padStart(2, "0")}`;
+              const done = isDoneValue(state.routineLogs[dKey] && state.routineLogs[dKey][routine.id]);
+              if (!firstDate) firstDate = new Date(year, month - 1, day);
+              weekTotal += 1;
+              if (done) {
+                weekDone += 1;
+                monthlyDone += 1;
+              }
+              dots.push(`<span class="routine-dot ${done ? "done" : ""}" title="${dKey} ${done ? "달성" : "미달성"}"></span>`);
+            }
 
-      let bestStreak = 0;
-      state.routines.forEach((r) => {
-        bestStreak = Math.max(bestStreak, getRoutineStreak(r.id));
+            const weekCountText = `${weekDone}/${weekTotal}`;
+            const weekNo = firstDate ? getSundayWeekNumber(firstDate) : "";
+            weekLines.push(`
+              <div class="routine-week-line">
+                <div class="routine-week-dots">${dots.join("")}</div>
+                <span class="routine-week-rate">${weekNo ? `W${weekNo}` : "W-"} ${weekCountText}</span>
+              </div>
+            `);
+          }
+
+          const monthlyCountText = `${monthlyDone}/${daysInMonth}`;
+
+          return `
+            <article class="routine-analysis-card">
+              <div class="routine-analysis-head">
+                <strong>${escapeHTML(routine.name)}</strong>
+                <span class="routine-month-rate">월간 ${monthlyCountText}</span>
+              </div>
+              <div class="routine-week-list">${weekLines.join("")}</div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      const journalRecords = [];
+      const quickRecords = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dKey = `${monthPrefix}${String(day).padStart(2, "0")}`;
+        const journal = getJournalForDate(dKey);
+        const journalBody = String(journal.journalBody || "").trim();
+        if (journal.sticker || journalBody) {
+          journalRecords.push({
+            day,
+            key: dKey,
+            sticker: journal.sticker || "",
+            body: journalBody
+          });
+        }
+
+        const quick = String(getQuickNotesForDate(dKey) || "").trim();
+        if (quick) {
+          quickRecords.push({
+            day,
+            key: dKey,
+            body: quick
+          });
+        }
+      }
+
+      el.analysisJournalSummary.textContent = `Journal 기록일: ${journalRecords.length}일`;
+      el.analysisQuickSummary.textContent = `Quick Note 기록일: ${quickRecords.length}일`;
+
+      el.analysisJournalDays.innerHTML = journalRecords.length
+        ? journalRecords.map((r) => `<span class="analysis-day">${r.day}일</span>`).join("")
+        : '<span class="analysis-day empty">기록 없음</span>';
+
+      el.analysisQuickDays.innerHTML = quickRecords.length
+        ? quickRecords.map((r) => `<span class="analysis-day">${r.day}일</span>`).join("")
+        : '<span class="analysis-day empty">기록 없음</span>';
+
+      el.analysisJournalEntries.innerHTML = journalRecords.length
+        ? journalRecords.map((record) => {
+          const lines = [];
+          if (record.sticker) lines.push(`스티커: ${escapeHTML(record.sticker)}`);
+          if (record.body) lines.push(toMultilineHTML(record.body));
+          return `
+            <article class="analysis-record-item">
+              <strong>${record.key}</strong>
+              ${lines.join("<br>")}
+            </article>
+          `;
+        }).join("")
+        : '<article class="analysis-record-item empty">저널 기록 내용이 없습니다.</article>';
+
+      el.analysisQuickEntries.innerHTML = quickRecords.length
+        ? quickRecords.map((record) => `
+            <article class="analysis-record-item">
+              <strong>${record.key}</strong>
+              ${toMultilineHTML(record.body)}
+            </article>
+          `).join("")
+        : '<article class="analysis-record-item empty">퀵노트 기록 내용이 없습니다.</article>';
+    }
+
+    function getNextGoalCategoryName() {
+      const used = new Set(
+        state.annualGoals
+          .map((goal) => {
+            const match = String(goal.title || "").trim().match(/^카테고리\s+(\d+)$/);
+            return match ? Number(match[1]) : 0;
+          })
+          .filter((n) => n > 0)
+      );
+      let idx = 1;
+      while (used.has(idx)) idx += 1;
+      return `카테고리 ${idx}`;
+    }
+
+    function renderAnnualGoals() {
+      if (!el.annualGoalList) return;
+      if (!state.annualGoals.length) {
+        el.annualGoalList.innerHTML = '<div class="goal-empty">카테고리를 추가해 연간 목표를 작성하세요.</div>';
+        return;
+      }
+
+      el.annualGoalList.innerHTML = state.annualGoals.map((goal) => `
+        <article class="goal-card" data-goal-id="${goal.id}">
+          <div class="goal-head">
+            <input
+              class="goal-title"
+              type="text"
+              value="${escapeHTML(goal.title)}"
+              placeholder="카테고리 이름 (예: 건강, 커리어, 재무)"
+              aria-label="연간 목표 카테고리"
+              data-goal-field="title"
+            >
+            <button class="mini-btn" data-delete-goal="${goal.id}">삭제</button>
+          </div>
+          <textarea
+            class="goal-content"
+            rows="3"
+            placeholder="해당 카테고리의 연간 목표를 입력하세요."
+            aria-label="연간 목표 내용"
+            data-goal-field="body"
+          >${escapeHTML(goal.body)}</textarea>
+        </article>
+      `).join("");
+    }
+
+    function addAnnualGoalCategory() {
+      state.annualGoals.push({
+        ...createAnnualGoalCategory(),
+        title: getNextGoalCategoryName(),
+        body: ""
       });
-
-      el.monthRangeText.textContent = `${formatDateDot(monthStart)} ~ ${formatDateDot(monthEnd)}`;
-      el.monthTodoRate.textContent = `${todoRate}%`;
-      el.monthTodoCount.textContent = `${todoDone} / ${todoTotal}`;
-      el.monthWorkDays.textContent = `${workLoggedDays}일`;
-      el.monthRoutineAvg.textContent = `${routineAvg}%`;
-      el.monthRoutineDays.textContent = `${routineLoggedDays}일`;
-      el.monthBestStreak.textContent = `${bestStreak}d`;
+      save();
+      renderAnnualGoals();
     }
 
     function renderAnnualOverview() {
@@ -1657,26 +2762,28 @@
       for (let m = 1; m <= 12; m++) {
         const mm = String(m).padStart(2, "0");
         const prefix = `${year}-${mm}-`;
-        const monthTodos = state.todos.filter((t) => t.dueDate && t.dueDate.startsWith(prefix));
-        const total = monthTodos.length;
-        const done = monthTodos.filter((t) => t.done).length;
-        const todoRate = total ? Math.round((done / total) * 100) : 0;
+        const daysInMonth = new Date(year, m, 0).getDate();
+        let quickDays = 0;
+        let journalDays = 0;
+        let routineDoneTotal = 0;
 
-        const logKeys = Object.keys(state.dailyLogs).filter((k) => k.startsWith(prefix));
-        const routineDays = logKeys.length;
-        const routineAvg = routineDays
-          ? Math.round(logKeys.reduce((acc, k) => acc + (state.dailyLogs[k].routineRate || 0), 0) / routineDays)
-          : 0;
-        const workDays = logKeys.filter((k) => Boolean(state.dailyLogs[k].workLogged)).length;
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dKey = `${prefix}${String(day).padStart(2, "0")}`;
+          if (hasQuickNoteRecord(dKey)) quickDays += 1;
+          if (hasJournalRecord(dKey)) journalDays += 1;
+          routineDoneTotal += getRoutineDoneCountForDate(dKey);
+        }
+
+        const routineTotalPossible = daysInMonth * state.routines.length;
+        const routineRate = routineTotalPossible ? Math.round((routineDoneTotal / routineTotalPossible) * 100) : 0;
 
         html += `
           <article class="annual-card" data-annual-month="${year}-${mm}">
             <h4>${monthLabels[m - 1]}</h4>
             <div class="annual-kpi">
-              <span>업무 완료율 <strong>${todoRate}%</strong></span>
-              <span>완료 / 총계 <strong>${done} / ${total}</strong></span>
-              <span>업무 기록일 <strong>${workDays}일</strong></span>
-              <span>루틴 평균 <strong>${routineAvg}%</strong></span>
+              <span>퀵노트 기록일 <strong>${quickDays}일</strong></span>
+              <span>저널 기록일 <strong>${journalDays}일</strong></span>
+              <span>루틴 달성율 <strong>${routineRate}%</strong></span>
             </div>
           </article>
         `;
@@ -1720,10 +2827,11 @@
     }
 
     function exportData() {
+      const snapshot = buildStateSnapshot();
       const payload = {
-        version: 2,
+        version: STORAGE_VERSION,
         exportedAt: new Date().toISOString(),
-        data: state
+        data: snapshot
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -1741,36 +2849,9 @@
       reader.onload = () => {
         try {
           const parsed = JSON.parse(reader.result);
-          const incoming = parsed && parsed.data ? parsed.data : parsed;
-          if (!incoming || typeof incoming !== "object") return;
-
-          state.activeTab = incoming.activeTab || "dashboard";
-          state.todos = Array.isArray(incoming.todos) ? incoming.todos : [];
-          state.filter = ["all", "open", "done"].includes(incoming.filter) ? incoming.filter : "all";
-          state.projectFilter = incoming.projectFilter || "all";
-          state.selectedDate = incoming.selectedDate || todayKey();
-          state.calendarMonth = incoming.calendarMonth || state.selectedDate.slice(0, 7);
-          state.annualYear = Number(incoming.annualYear) || new Date(state.selectedDate).getFullYear();
-          state.annualGoal = incoming.annualGoal || "";
-          state.projectTags = Array.isArray(incoming.projectTags) && incoming.projectTags.length ? incoming.projectTags : [...fixedProjectTags];
-          state.quickNotes = incoming.quickNotes || "";
-          state.routines = Array.isArray(incoming.routines) && incoming.routines.length
-            ? incoming.routines
-            : defaultRoutines.map((r) => ({ ...r }));
-          state.routineLogs = incoming.routineLogs && typeof incoming.routineLogs === "object" ? incoming.routineLogs : {};
-          state.dailyLogs = incoming.dailyLogs && typeof incoming.dailyLogs === "object" ? incoming.dailyLogs : {};
-          state.journals = incoming.journals && typeof incoming.journals === "object" ? incoming.journals : {};
-          normalizeTags();
-          normalizeTodos();
-          syncRoutinesFromSelectedDate();
-
+          applyLoadedState(parsed, { forceToday: false });
           save();
-          syncInputs();
-          renderTodos();
-          renderRoutines();
-          renderCalendar();
-          renderSelectedDayTasks();
-          renderMonthlyReport();
+          renderAll();
         } catch (err) {
           alert("가져오기 실패: JSON 파일 형식을 확인해 주세요.");
           console.warn(err);
@@ -1782,6 +2863,60 @@
     function bindEvents() {
       el.tabButtons.forEach((btn) => {
         btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+      });
+
+      el.loginBtn.addEventListener("click", async () => {
+        if (!cloudEnabled || !cloudAuth) {
+          alert("Firebase 설정 후 로그인 기능을 사용할 수 있습니다.");
+          return;
+        }
+        const email = el.authEmail.value.trim();
+        const password = el.authPassword.value;
+        if (!email || !password) {
+          alert("이메일과 비밀번호를 입력해 주세요.");
+          return;
+        }
+        try {
+          setSyncStatus("로그인 중...", "saving");
+          await cloudAuth.signInWithEmailAndPassword(email, password);
+          el.authPassword.value = "";
+        } catch (err) {
+          console.warn(err);
+          setSyncStatus("로그인 실패", "");
+          alert(toAuthErrorMessage(err));
+        }
+      });
+
+      el.signupBtn.addEventListener("click", async () => {
+        if (!cloudEnabled || !cloudAuth) {
+          alert("Firebase 설정 후 회원가입 기능을 사용할 수 있습니다.");
+          return;
+        }
+        const email = el.authEmail.value.trim();
+        const password = el.authPassword.value;
+        if (!email || !password) {
+          alert("이메일과 비밀번호를 입력해 주세요.");
+          return;
+        }
+        try {
+          setSyncStatus("계정 생성 중...", "saving");
+          await cloudAuth.createUserWithEmailAndPassword(email, password);
+          el.authPassword.value = "";
+        } catch (err) {
+          console.warn(err);
+          setSyncStatus("회원가입 실패", "");
+          alert(toAuthErrorMessage(err));
+        }
+      });
+
+      el.logoutBtn.addEventListener("click", async () => {
+        if (!cloudEnabled || !cloudAuth) return;
+        try {
+          await cloudAuth.signOut();
+        } catch (err) {
+          console.warn(err);
+          alert("로그아웃 처리에 실패했습니다.");
+        }
       });
 
       el.addTodoBtn.addEventListener("click", addTodo);
@@ -1801,16 +2936,15 @@
 
       el.globalDatePicker.addEventListener("change", () => {
         if (!el.globalDatePicker.value) return;
-        state.selectedDate = el.globalDatePicker.value;
-        state.calendarMonth = state.selectedDate.slice(0, 7);
-        syncRoutinesFromSelectedDate();
-        save();
-        syncInputs();
-        renderTodos();
-        renderRoutines();
-        renderCalendar();
-        renderSelectedDayTasks();
-        renderMonthlyReport();
+        moveToDate(el.globalDatePicker.value);
+      });
+
+      el.prevDateBtn.addEventListener("click", () => {
+        moveToDate(shiftDateByDays(state.selectedDate, -1));
+      });
+
+      el.nextDateBtn.addEventListener("click", () => {
+        moveToDate(shiftDateByDays(state.selectedDate, 1));
       });
 
       el.todoList.addEventListener("click", (e) => {
@@ -1899,10 +3033,25 @@
         renderTodos();
       });
 
+      if (el.routineFilterChips) {
+        el.routineFilterChips.addEventListener("click", (e) => {
+          const chip = e.target.closest("[data-routine-filter]");
+          if (!chip) return;
+          const filter = chip.dataset.routineFilter;
+          if (!ROUTINE_FILTERS.includes(filter)) return;
+          state.routineFilter = filter;
+          save();
+          renderRoutines();
+          [...el.routineFilterChips.querySelectorAll(".chip")].forEach((item) => {
+            item.classList.toggle("active", item.dataset.routineFilter === state.routineFilter);
+          });
+        });
+      }
+
       ["journalBody", "quickNotes"].forEach((key) => {
         el[key].addEventListener("input", () => {
           if (key === "quickNotes") {
-            state.quickNotes = el[key].value;
+            saveQuickNotesForSelectedDate(el[key].value);
           } else {
             saveJournalField(key, el[key].value);
           }
@@ -1910,11 +3059,6 @@
           updateStats();
           renderMonthlyReport();
         });
-      });
-
-      el.annualGoal.addEventListener("input", () => {
-        state.annualGoal = el.annualGoal.value;
-        save();
       });
 
       el.journalSticker.addEventListener("click", (e) => {
@@ -1926,17 +3070,6 @@
         save();
         syncInputs();
         renderSelectedDayTasks();
-        renderMonthlyReport();
-      });
-
-      el.routineList.addEventListener("change", (e) => {
-        const cb = e.target.closest("input[type='checkbox'][data-rid]");
-        if (!cb) return;
-        const routine = state.routines.find((r) => r.id === cb.dataset.rid);
-        if (!routine) return;
-        routine.done = cb.checked;
-        save();
-        renderRoutines();
         renderMonthlyReport();
       });
 
@@ -1952,6 +3085,19 @@
       });
 
       el.routineList.addEventListener("click", (e) => {
+        const toggleBtn = e.target.closest("[data-toggle-routine]");
+        if (toggleBtn) {
+          const rid = toggleBtn.dataset.toggleRoutine;
+          const routine = state.routines.find((r) => r.id === rid);
+          if (!routine) return;
+          routine.done = !routine.done;
+          save();
+          renderRoutines();
+          renderCalendar();
+          renderMonthlyReport();
+          return;
+        }
+
         const delBtn = e.target.closest("[data-delete-routine]");
         if (!delBtn) return;
         const rid = delBtn.dataset.deleteRoutine;
@@ -1963,6 +3109,7 @@
         });
         save();
         renderRoutines();
+        renderCalendar();
         renderMonthlyReport();
       });
 
@@ -1979,12 +3126,20 @@
         addRoutineTemplate(btn.dataset.routines);
       });
 
-      el.calendarMonth.addEventListener("change", () => {
-        if (!el.calendarMonth.value) return;
-        state.calendarMonth = el.calendarMonth.value;
-        save();
-        renderCalendar();
-        renderMonthlyReport();
+      el.calendarPrevMonthBtn.addEventListener("click", () => {
+        setCalendarMonth(shiftMonthKey(state.calendarMonth, -1));
+      });
+
+      el.calendarNextMonthBtn.addEventListener("click", () => {
+        setCalendarMonth(shiftMonthKey(state.calendarMonth, 1));
+      });
+
+      el.analysisPrevMonthBtn.addEventListener("click", () => {
+        setAnalysisMonth(shiftMonthKey(state.analysisMonth, -1));
+      });
+
+      el.analysisNextMonthBtn.addEventListener("click", () => {
+        setAnalysisMonth(shiftMonthKey(state.analysisMonth, 1));
       });
 
       el.annualYear.addEventListener("change", () => {
@@ -1995,36 +3150,56 @@
         renderAnnualOverview();
       });
 
+      if (el.addAnnualGoalBtn) {
+        el.addAnnualGoalBtn.addEventListener("click", addAnnualGoalCategory);
+      }
+
+      if (el.annualGoalList) {
+        el.annualGoalList.addEventListener("input", (e) => {
+          const field = e.target.closest("[data-goal-field]");
+          if (!field) return;
+          const card = e.target.closest("[data-goal-id]");
+          if (!card) return;
+          const goal = state.annualGoals.find((item) => item.id === card.dataset.goalId);
+          if (!goal) return;
+          const key = field.dataset.goalField;
+          if (key === "title") {
+            goal.title = field.value;
+          } else if (key === "body") {
+            goal.body = field.value;
+          } else {
+            return;
+          }
+          save();
+        });
+
+        el.annualGoalList.addEventListener("click", (e) => {
+          const delBtn = e.target.closest("[data-delete-goal]");
+          if (!delBtn) return;
+          const gid = delBtn.dataset.deleteGoal;
+          state.annualGoals = state.annualGoals.filter((goal) => goal.id !== gid);
+          save();
+          renderAnnualGoals();
+        });
+      }
+
       el.calendarGrid.addEventListener("click", (e) => {
         const cell = e.target.closest(".day-cell[data-date]");
         if (!cell) return;
-
-        state.selectedDate = cell.dataset.date;
-        state.calendarMonth = state.selectedDate.slice(0, 7);
-        setActiveTab("dashboard");
-        syncRoutinesFromSelectedDate();
-        save();
-        syncInputs();
-        renderTodos();
-        renderRoutines();
-        renderCalendar();
-        renderSelectedDayTasks();
-        renderMonthlyReport();
+        moveToDate(cell.dataset.date, "dashboard");
       });
 
       el.annualGrid.addEventListener("click", (e) => {
         const card = e.target.closest("[data-annual-month]");
         if (!card) return;
-        state.calendarMonth = card.dataset.annualMonth;
-        const [y, m] = state.calendarMonth.split("-").map(Number);
-        state.selectedDate = `${y}-${String(m).padStart(2, "0")}-01`;
-        setActiveTab("calendar");
-        syncRoutinesFromSelectedDate();
-        save();
-        syncInputs();
-        renderCalendar();
-        renderSelectedDayTasks();
-        renderMonthlyReport();
+        const [y, m] = card.dataset.annualMonth.split("-").map(Number);
+        const targetDate = `${y}-${String(m).padStart(2, "0")}-01`;
+        moveToDate(targetDate, "calendar");
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState !== "visible") return;
+        resetToTodayIfDateRolledOver();
       });
 
       el.exportBtn.addEventListener("click", exportData);
@@ -2036,16 +3211,12 @@
       });
     }
 
-    load();
+    load({ allowLegacyGuest: true, forceToday: false, forceLandingCalendar: true });
     renderWeekdayRow();
-    syncInputs();
-    renderTodos();
-    renderRoutines();
-    renderCalendar();
-    renderSelectedDayTasks();
-    renderMonthlyReport();
-    renderAnnualOverview();
+    renderAll();
     bindEvents();
+    updateAuthUI();
+    initCloud();
   </script>
 </body>
 </html>
