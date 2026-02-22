@@ -374,6 +374,14 @@
       font-weight: 700;
       font-family: "Outfit", sans-serif;
     }
+    .stats-date {
+      margin: 8px 2px 0;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 12px;
+      line-height: 1.4;
+      position: relative;
+      z-index: 2;
+    }
 
     .tabs {
       display: flex;
@@ -981,6 +989,7 @@
       justify-content: space-between;
       gap: 6px;
       transition: transform 0.1s ease, border-color 0.15s ease;
+      overflow: hidden;
     }
 
     .day-cell:hover { transform: translateY(-1px); }
@@ -1025,18 +1034,14 @@
       padding: 3px 6px;
       display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 6px;
+      justify-content: center;
+      gap: 4px;
       width: auto;
       line-height: 1.2;
       min-height: 22px;
       white-space: nowrap;
-    }
-    .day-meta strong {
-      font-family: "Outfit", sans-serif;
-      font-size: 11px;
-      color: #1d4f87;
-      letter-spacing: -0.01em;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .day-meta.flag {
@@ -1462,16 +1467,15 @@
       }
       .day-meta {
         width: 100%;
-        font-size: 9px;
+        font-size: 8px;
         padding: 1px 3px;
         border-radius: 6px;
-        min-height: 17px;
+        min-height: 16px;
         line-height: 1.2;
         gap: 3px;
       }
-      .day-meta strong {
-        font-size: 9px;
-        letter-spacing: -0.01em;
+      .stats-date {
+        font-size: 11px;
       }
     }
   </style>
@@ -1496,6 +1500,7 @@
           <div class="value" id="statRoutine">0%</div>
         </article>
       </div>
+      <p class="stats-date" id="statsDateText">기준일: 오늘 0000.00.00</p>
     </section>
 
     <div class="settings-backdrop" id="settingsBackdrop" hidden></div>
@@ -1847,6 +1852,7 @@
       routineText: document.getElementById("routineText"),
       statRemain: document.getElementById("statRemain"),
       statRoutine: document.getElementById("statRoutine"),
+      statsDateText: document.getElementById("statsDateText"),
       exportBtn: document.getElementById("exportBtn"),
       importBtn: document.getElementById("importBtn"),
       importFile: document.getElementById("importFile"),
@@ -2490,6 +2496,9 @@
 
       el.statRemain.textContent = String(remain);
       el.statRoutine.textContent = `${routineRate}%`;
+      if (el.statsDateText) {
+        el.statsDateText.textContent = `기준일: 오늘 ${formatDateDot(today)}`;
+      }
     }
 
     function renderRoutines() {
@@ -2772,10 +2781,10 @@
 
         const metaHtml = `
           <div class="day-meta-grid">
-            <span class="day-meta"><span>업무</span><strong>${summary.todoCount}</strong></span>
-            <span class="day-meta routine-meta ${routineState === "none" ? "" : routineState}"><span>루틴</span><strong>${summary.routineDone}/${summary.routineTotal}</strong></span>
-            <span class="day-meta flag ${summary.journalLogged ? "" : "off"}" title="저널 기록 여부"><span>J</span><strong>${summary.journalLogged ? "O" : "-"}</strong></span>
-            <span class="day-meta flag ${summary.quickLogged ? "" : "off"}" title="퀵노트 기록 여부"><span>Q</span><strong>${summary.quickLogged ? "O" : "-"}</strong></span>
+            <span class="day-meta">업무 ${summary.todoCount}</span>
+            <span class="day-meta routine-meta ${routineState === "none" ? "" : routineState}">루틴 ${summary.routineDone}</span>
+            <span class="day-meta flag ${summary.journalLogged ? "" : "off"}" title="저널 기록 여부">J ${summary.journalLogged ? "O" : "-"}</span>
+            <span class="day-meta flag ${summary.quickLogged ? "" : "off"}" title="퀵노트 기록 여부">Q ${summary.quickLogged ? "O" : "-"}</span>
           </div>
         `;
         cells.push(`
