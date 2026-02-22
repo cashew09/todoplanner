@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Romance Fantasy Studio</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Marcellus&family=Noto+Sans+KR:wght@400;500;700&display=swap");
+
+    :root {
+      --bg: #f6efe5;
+      --bg-soft: #fbf6ee;
+      --card: #fffdf8;
+      --line: #e2d4c3;
+      --ink: #2f1f1a;
+      --muted: #78685b;
+      --accent: #9f3b2e;
+      --accent-soft: #f2ddd1;
+      --gold: #b9874d;
+      --shadow: 0 14px 34px rgba(50, 30, 20, 0.1);
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -5%, #f1e0cf 0%, transparent 65%),
+        radial-gradient(900px 420px at 90% 0%, #f2dfcb 0%, transparent 62%),
+        repeating-linear-gradient(
+          125deg,
+          rgba(255, 255, 255, 0.18) 0,
+          rgba(255, 255, 255, 0.18) 8px,
+          rgba(255, 255, 255, 0) 8px,
+          rgba(255, 255, 255, 0) 18px
+        ),
+        var(--bg);
+    }
+
+    .app {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero {
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(135deg, rgba(56, 24, 20, 0.92), rgba(104, 35, 23, 0.87)),
+        url("https://images.unsplash.com/photo-1521907236370-15adf4f7f0af?q=80&w=1400&auto=format&fit=crop") center/cover;
+      color: #fff8ee;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      animation: rise 0.45s ease both;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -120px auto;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
+      pointer-events: none;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(34px, 4.8vw, 52px);
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: rgba(255, 248, 238, 0.92);
+      font-size: 14px;
+      line-height: 1.45;
+      max-width: 760px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .btn.main {
+      background: #fff6eb;
+      color: #6c2b20;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.38);
+      color: #fff7e8;
+    }
+
+    .hero-stats {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-stat {
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 10px 12px;
+    }
+
+    .hero-stat .label {
+      font-size: 11px;
+      color: rgba(255, 248, 238, 0.86);
+    }
+
+    .hero-stat .value {
+      margin-top: 3px;
+      font-family: "Marcellus", serif;
+      font-size: 18px;
+      color: #fff9ef;
+      letter-spacing: 0.01em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.04fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .column {
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      animation: rise 0.42s ease both;
+      animation-delay: var(--delay, 0s);
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card h2,
+    .card h3 {
+      margin: 0;
+      font-family: "Marcellus", serif;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: #5f2f23;
+    }
+
+    .card h2 {
+      font-size: 21px;
+    }
+
+    .card h3 {
+      font-size: 18px;
+    }
+
+    .sub {
+      margin: 3px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 12px;
+      color: #6d5848;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid #d7c8b7;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      background: #fff;
+      color: var(--ink);
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 108px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .keyword-input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+
+    .tag-list {
+      margin-top: 8px;
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      border-radius: 999px;
+      border: 1px solid #d9bf9d;
+      background: #fff2de;
+      color: #7b4926;
+      font-size: 12px;
+      padding: 5px 9px;
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .tag button {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .list {
+      display: grid;
+      gap: 9px;
+      margin-top: 8px;
+    }
+
+    .item {
+      border: 1px solid #decebc;
+      border-radius: 12px;
+      background: #fffaf3;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .item-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6b3a2b;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .mini-btn {
+      border: 1px solid #d8c2ad;
+      background: #fff;
+      border-radius: 8px;
+      padding: 6px 9px;
+      font-size: 12px;
+      cursor: pointer;
+      color: #6a5240;
+    }
+
+    .mini-btn.danger {
+      border-color: #e2bab3;
+      background: #fff4f2;
+      color: #a74839;
+    }
+
+    .character-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .episode-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 120px 120px;
+    }
+
+    .writing-box {
+      min-height: 360px;
+    }
+
+    .empty {
+      border: 1px dashed #dccab6;
+      border-radius: 11px;
+      padding: 10px;
+      font-size: 12px;
+      color: #8a796b;
+      background: #fffaf2;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: #7c6a5b;
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .writing-box {
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        padding: 16px 12px 52px;
+      }
+      .hero {
+        padding: 16px;
+      }
+      .hero h1 {
+        font-size: clamp(30px, 8vw, 40px);
+      }
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+      .form-grid,
+      .character-grid,
+      .episode-grid {
+        grid-template-columns: 1fr;
+      }
+      .btn {
+        width: 100%;
+      }
+      .toolbar {
+        width: 100%;
+      }
+      input[type="text"],
+      textarea,
+      select {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h1>Romance Fantasy Studio</h1>
+          <p>궁정의 음모, 계약 결혼, 회귀, 구원 서사를 한 화면에서 설계하고 바로 집필해보세요.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn main" id="exportBtn">백업 내보내기</button>
+          <button class="btn ghost" id="importBtn">백업 가져오기</button>
+          <input type="file" id="importFile" accept="application/json" hidden />
+        </div>
+      </div>
+      <div class="hero-stats">
+        <article class="hero-stat">
+          <div class="label">자동 저장 상태</div>
+          <div class="value" id="saveStatus">로컬 자동저장</div>
+        </article>
+        <article class="hero-stat">
+          <div class="label">집필 분량</div>
+          <div class="value" id="wordStat">0 어절 · 0 글자</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="column">
+        <article class="card" style="--delay:0.02s;">
+          <div class="title-row">
+            <div>
+              <h2>작품 개요</h2>
+              <p class="sub">작품의 뼈대를 먼저 고정해두세요.</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="workTitle">작품 제목</label>
+              <input type="text" id="workTitle" placeholder="예: 황금 탑의 약혼자" />
+            </div>
+            <div class="field">
+              <label for="workSubtitle">한 줄 소개</label>
+              <input type="text" id="workSubtitle" placeholder="예: 사라진 기억과 함께 시작된 계약 결혼" />
+            </div>
+            <div class="field full">
+              <label for="toneSelect">톤</label>
+              <select id="toneSelect">
+                <option value="궁정 로맨스">궁정 로맨스</option>
+                <option value="회귀/복수">회귀/복수</option>
+                <option value="치유/성장">치유/성장</option>
+                <option value="모험/전쟁">모험/전쟁</option>
+              </select>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" style="--delay:0.06s;">
+          <div class="title-row">
+            <div>
+              <h3>줄거리 씨앗</h3>
+              <p class="sub">핵심 갈등과 엔딩 감정을 먼저 정의하세요.</p>
+            </div>
+          </div>
+          <textarea id="premise" placeholder="주인공의 목표, 갈등, 결말 감정까지 5~7줄로 적어보세요."></textarea>
+        </article>
+
+        <article class="card" style="--delay:0.1s;">
+          <div class="title-row">
+            <div>
+              <h3>핵심 키워드</h3>
+              <p class="sub">작품 톤을 잃지 않도록 키워드를 고정하세요.</p>
+            </div>
+          </div>
+          <div class="keyword-input-row">
+            <input type="text" id="keywordInput" placeholder="키워드 입력 후 추가" />
+            <button class="btn main" id="addKeywordBtn">추가</button>
+          </div>
+          <div class="tag-list" id="keywordList"></div>
+        </article>
+
+        <article class="card" style="--delay:0.14s;">
+          <div class="title-row">
+            <div>
+              <h3>등장인물</h3>
+              <p class="sub">욕망과 비밀이 분명해야 장면이 살아납니다.</p>
+            </div>
+            <button class="mini-btn" id="addCharacterBtn">인물 추가</button>
+          </div>
+          <div class="list" id="characterList"></div>
+        </article>
+
+        <article class="card" style="--delay:0.18s;">
+          <div class="title-row">
+            <div>
+              <h3>세계관 / 마법 규칙</h3>
+              <p class="sub">권력 구조, 금기, 대가를 먼저 명시하세요.</p>
+            </div>
+          </div>
+          <textarea id="worldRule" placeholder="예: 마력은 기억을 대가로 사용한다. 황실 혈통만 성문 인장을 해제할 수 있다."></textarea>
+        </article>
+      </div>
+
+      <div class="column">
+        <article class="card" style="--delay:0.06s;">
+          <div class="title-row">
+            <div>
+              <h2>에피소드 플래너</h2>
+              <p class="sub">장면 단위로 텐션과 진행 상태를 관리하세요.</p>
+            </div>
+            <button class="mini-btn" id="addEpisodeBtn">에피소드 추가</button>
+          </div>
+          <div class="list" id="episodeList"></div>
+        </article>
+
+        <article class="card" style="--delay:0.1s;">
+          <div class="title-row">
+            <div>
+              <h2>집필 에디터</h2>
+              <p class="sub">첫 문단부터 바로 작성해보세요.</p>
+            </div>
+          </div>
+          <textarea class="writing-box" id="manuscript" placeholder="장면을 작성하세요. 자동 저장됩니다."></textarea>
+        </article>
+
+        <article class="card" style="--delay:0.14s;">
+          <div class="title-row">
+            <div>
+              <h3>아이디어 메모</h3>
+              <p class="sub">대사, 장면, 반전 아이디어를 빠르게 적어두세요.</p>
+            </div>
+          </div>
+          <textarea id="ideaNote" placeholder="예: 17화 끝에서 반지의 주인이 바뀌는 반전"></textarea>
+        </article>
+      </div>
+    </section>
+
+    <p class="footer-note">모든 내용은 브라우저 로컬 저장소에 자동 저장됩니다.</p>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "romance-fantasy-studio-v1";
+    const SAVE_DELAY = 450;
+
+    function makeId(prefix) {
+      return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`;
+    }
+
+    function defaultCharacter() {
+      return {
+        id: makeId("char"),
+        name: "",
+        role: "",
+        desire: "",
+        secret: "",
+        note: ""
+      };
+    }
+
+    function defaultEpisode() {
+      return {
+        id: makeId("ep"),
+        title: "",
+        beat: "",
+        tension: "mid",
+        status: "planned"
+      };
+    }
+
+    const state = {
+      workTitle: "",
+      workSubtitle: "",
+      tone: "궁정 로맨스",
+      premise: "",
+      keywords: ["계약결혼", "회귀", "궁정"],
+      characters: [defaultCharacter()],
+      worldRule: "",
+      episodes: [defaultEpisode()],
+      manuscript: "",
+      ideaNote: "",
+      updatedAt: 0
+    };
+
+    let saveTimer = null;
+
+    const el = {
+      exportBtn: document.getElementById("exportBtn"),
+      importBtn: document.getElementById("importBtn"),
+      importFile: document.getElementById("importFile"),
+      saveStatus: document.getElementById("saveStatus"),
+      wordStat: document.getElementById("wordStat"),
+      workTitle: document.getElementById("workTitle"),
+      workSubtitle: document.getElementById("workSubtitle"),
+      toneSelect: document.getElementById("toneSelect"),
+      premise: document.getElementById("premise"),
+      keywordInput: document.getElementById("keywordInput"),
+      addKeywordBtn: document.getElementById("addKeywordBtn"),
+      keywordList: document.getElementById("keywordList"),
+      addCharacterBtn: document.getElementById("addCharacterBtn"),
+      characterList: document.getElementById("characterList"),
+      worldRule: document.getElementById("worldRule"),
+      addEpisodeBtn: document.getElementById("addEpisodeBtn"),
+      episodeList: document.getElementById("episodeList"),
+      manuscript: document.getElementById("manuscript"),
+      ideaNote: document.getElementById("ideaNote")
+    };
+
+    function setSaveStatus(text) {
+      el.saveStatus.textContent = text;
+    }
+
+    function updateWordStat() {
+      const text = String(state.manuscript || "");
+      const words = text.trim() ? text.trim().split(/\s+/u).filter(Boolean).length : 0;
+      const chars = text.replace(/\s/g, "").length;
+      el.wordStat.textContent = `${words.toLocaleString()} 어절 · ${chars.toLocaleString()} 글자`;
+    }
+
+    function renderKeywords() {
+      if (!state.keywords.length) {
+        el.keywordList.innerHTML = '<div class="empty">키워드를 추가해 작품 톤을 고정하세요.</div>';
+        return;
+      }
+      el.keywordList.innerHTML = state.keywords.map((keyword, idx) => `
+        <span class="tag">
+          ${escapeHTML(keyword)}
+          <button type="button" data-remove-keyword="${idx}" aria-label="키워드 삭제">✕</button>
+        </span>
+      `).join("");
+    }
+
+    function renderCharacters() {
+      if (!state.characters.length) {
+        el.characterList.innerHTML = '<div class="empty">등장인물을 추가해 주세요.</div>';
+        return;
+      }
+      el.characterList.innerHTML = state.characters.map((item, index) => `
+        <article class="item" data-character-id="${item.id}">
+          <div class="item-head">
+            <span class="item-title">Character ${index + 1}</span>
+            <button class="mini-btn danger" data-remove-character="${item.id}">삭제</button>
+          </div>
+          <div class="character-grid">
+            <input type="text" data-field="name" value="${escapeHTML(item.name)}" placeholder="이름" />
+            <input type="text" data-field="role" value="${escapeHTML(item.role)}" placeholder="역할 (주인공/남주/조연)" />
+            <input type="text" data-field="desire" value="${escapeHTML(item.desire)}" placeholder="욕망 / 목표" />
+            <input type="text" data-field="secret" value="${escapeHTML(item.secret)}" placeholder="비밀 / 약점" />
+          </div>
+          <textarea data-field="note" placeholder="관계성, 서사 포인트">${escapeHTML(item.note)}</textarea>
+        </article>
+      `).join("");
+    }
+
+    function renderEpisodes() {
+      if (!state.episodes.length) {
+        el.episodeList.innerHTML = '<div class="empty">에피소드를 추가해 주세요.</div>';
+        return;
+      }
+      el.episodeList.innerHTML = state.episodes.map((item, index) => `
+        <article class="item" data-episode-id="${item.id}">
+          <div class="item-head">
+            <span class="item-title">Episode ${index + 1}</span>
+            <button class="mini-btn danger" data-remove-episode="${item.id}">삭제</button>
+          </div>
+          <div class="episode-grid">
+            <input type="text" data-field="title" value="${escapeHTML(item.title)}" placeholder="화 제목 / 장면명" />
+            <select data-field="tension">
+              <option value="low" ${item.tension === "low" ? "selected" : ""}>텐션 낮음</option>
+              <option value="mid" ${item.tension === "mid" ? "selected" : ""}>텐션 중간</option>
+              <option value="high" ${item.tension === "high" ? "selected" : ""}>텐션 높음</option>
+            </select>
+            <select data-field="status">
+              <option value="planned" ${item.status === "planned" ? "selected" : ""}>구상</option>
+              <option value="drafting" ${item.status === "drafting" ? "selected" : ""}>집필중</option>
+              <option value="done" ${item.status === "done" ? "selected" : ""}>완료</option>
+            </select>
+          </div>
+          <textarea data-field="beat" placeholder="핵심 사건 / 감정 비트">${escapeHTML(item.beat)}</textarea>
+        </article>
+      `).join("");
+    }
+
+    function renderAll() {
+      el.workTitle.value = state.workTitle;
+      el.workSubtitle.value = state.workSubtitle;
+      el.toneSelect.value = state.tone;
+      el.premise.value = state.premise;
+      el.worldRule.value = state.worldRule;
+      el.manuscript.value = state.manuscript;
+      el.ideaNote.value = state.ideaNote;
+      renderKeywords();
+      renderCharacters();
+      renderEpisodes();
+      updateWordStat();
+    }
+
+    function escapeHTML(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function saveNow() {
+      try {
+        state.updatedAt = Date.now();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        const at = new Date(state.updatedAt);
+        const hh = String(at.getHours()).padStart(2, "0");
+        const mm = String(at.getMinutes()).padStart(2, "0");
+        const ss = String(at.getSeconds()).padStart(2, "0");
+        setSaveStatus(`저장됨 ${hh}:${mm}:${ss}`);
+      } catch (err) {
+        console.warn(err);
+        setSaveStatus("저장 실패");
+      }
+    }
+
+    function queueSave() {
+      setSaveStatus("저장 중...");
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(saveNow, SAVE_DELAY);
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return;
+        Object.assign(state, parsed);
+        if (!Array.isArray(state.keywords)) state.keywords = [];
+        if (!Array.isArray(state.characters)) state.characters = [];
+        if (!Array.isArray(state.episodes)) state.episodes = [];
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+
+    function addKeyword() {
+      const value = el.keywordInput.value.trim();
+      if (!value) return;
+      if (!state.keywords.includes(value)) {
+        state.keywords.push(value);
+        queueSave();
+        renderKeywords();
+      }
+      el.keywordInput.value = "";
+      el.keywordInput.focus();
+    }
+
+    function bindEvents() {
+      ["workTitle", "workSubtitle", "premise", "worldRule", "manuscript", "ideaNote"].forEach((key) => {
+        el[key].addEventListener("input", () => {
+          state[key] = el[key].value;
+          if (key === "manuscript") updateWordStat();
+          queueSave();
+        });
+      });
+
+      el.toneSelect.addEventListener("change", () => {
+        state.tone = el.toneSelect.value;
+        queueSave();
+      });
+
+      el.addKeywordBtn.addEventListener("click", addKeyword);
+      el.keywordInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          addKeyword();
+        }
+      });
+      el.keywordList.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-remove-keyword]");
+        if (!btn) return;
+        const idx = Number(btn.dataset.removeKeyword);
+        if (!Number.isInteger(idx) || idx < 0 || idx >= state.keywords.length) return;
+        state.keywords.splice(idx, 1);
+        queueSave();
+        renderKeywords();
+      });
+
+      el.addCharacterBtn.addEventListener("click", () => {
+        state.characters.push(defaultCharacter());
+        queueSave();
+        renderCharacters();
+      });
+
+      el.characterList.addEventListener("input", (e) => {
+        const row = e.target.closest("[data-character-id]");
+        if (!row) return;
+        const item = state.characters.find((c) => c.id === row.dataset.characterId);
+        if (!item) return;
+        const field = e.target.dataset.field;
+        if (!field || !(field in item)) return;
+        item[field] = e.target.value;
+        queueSave();
+      });
+
+      el.characterList.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-remove-character]");
+        if (!btn) return;
+        const id = btn.dataset.removeCharacter;
+        state.characters = state.characters.filter((item) => item.id !== id);
+        queueSave();
+        renderCharacters();
+      });
+
+      el.addEpisodeBtn.addEventListener("click", () => {
+        state.episodes.push(defaultEpisode());
+        queueSave();
+        renderEpisodes();
+      });
+
+      el.episodeList.addEventListener("input", (e) => {
+        const row = e.target.closest("[data-episode-id]");
+        if (!row) return;
+        const item = state.episodes.find((ep) => ep.id === row.dataset.episodeId);
+        if (!item) return;
+        const field = e.target.dataset.field;
+        if (!field || !(field in item)) return;
+        item[field] = e.target.value;
+        queueSave();
+      });
+
+      el.episodeList.addEventListener("change", (e) => {
+        const row = e.target.closest("[data-episode-id]");
+        if (!row) return;
+        const item = state.episodes.find((ep) => ep.id === row.dataset.episodeId);
+        if (!item) return;
+        const field = e.target.dataset.field;
+        if (!field || !(field in item)) return;
+        item[field] = e.target.value;
+        queueSave();
+      });
+
+      el.episodeList.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-remove-episode]");
+        if (!btn) return;
+        const id = btn.dataset.removeEpisode;
+        state.episodes = state.episodes.filter((item) => item.id !== id);
+        queueSave();
+        renderEpisodes();
+      });
+
+      el.exportBtn.addEventListener("click", () => {
+        const payload = {
+          exportedAt: new Date().toISOString(),
+          data: state
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "romance-fantasy-studio-backup.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      el.importBtn.addEventListener("click", () => el.importFile.click());
+      el.importFile.addEventListener("change", () => {
+        const file = el.importFile.files && el.importFile.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            const data = parsed && typeof parsed === "object" && parsed.data ? parsed.data : parsed;
+            if (!data || typeof data !== "object") throw new Error("invalid");
+            Object.assign(state, data);
+            if (!Array.isArray(state.keywords)) state.keywords = [];
+            if (!Array.isArray(state.characters)) state.characters = [];
+            if (!Array.isArray(state.episodes)) state.episodes = [];
+            renderAll();
+            saveNow();
+          } catch (err) {
+            alert("가져오기 실패: JSON 형식을 확인해 주세요.");
+            console.warn(err);
+          }
+        };
+        reader.readAsText(file, "utf-8");
+        el.importFile.value = "";
+      });
+    }
+
+    loadState();
+    renderAll();
+    bindEvents();
+    setSaveStatus("로컬 자동저장");
+  </script>
+</body>
+</html>
