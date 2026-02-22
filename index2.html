@@ -1488,11 +1488,11 @@
       </div>
       <div class="stats">
         <article class="stat">
-          <div class="label">선택날짜 남은 할일</div>
+          <div class="label">오늘 남은 할일</div>
           <div class="value" id="statRemain">0</div>
         </article>
         <article class="stat">
-          <div class="label">선택날짜 루틴 달성율</div>
+          <div class="label">오늘 루틴 달성율</div>
           <div class="value" id="statRoutine">0%</div>
         </article>
       </div>
@@ -2479,12 +2479,13 @@
     }
 
     function updateStats() {
-      const dayTodos = state.todos.filter((t) => t.dueDate === state.selectedDate);
+      const today = todayKey();
+      const dayTodos = state.todos.filter((t) => t.dueDate === today);
       const total = dayTodos.length;
       const done = dayTodos.filter((t) => t.done).length;
       const remain = total - done;
       const routineTotal = state.routines.length;
-      const routineDone = state.routines.filter((r) => r.done).length;
+      const routineDone = getRoutineDoneCountForDate(today);
       const routineRate = routineTotal ? Math.round((routineDone / routineTotal) * 100) : 0;
 
       el.statRemain.textContent = String(remain);
