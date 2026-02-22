@@ -1403,11 +1403,6 @@
                 <p class="sub">체크는 날짜별로 분리되며, 하루가 바뀌면 자동으로 오늘 기준으로 리셋됩니다.</p>
               </div>
             </div>
-            <div class="chip-group" id="routineFilterChips">
-              <button class="chip active" data-routine-filter="open">진행중</button>
-              <button class="chip" data-routine-filter="done">완료</button>
-              <button class="chip" data-routine-filter="all">전체</button>
-            </div>
             <div class="routine-list" id="routineList"></div>
             <div class="routine-add">
               <input type="text" id="routineInput" placeholder="새 루틴 추가 (예: 물 2L)" />
@@ -1526,7 +1521,6 @@
     const CLOUD_COLLECTION = "plannerStates";
     const CLOUD_SAVE_DELAY_MS = 900;
     const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
-    const ROUTINE_FILTERS = ["all", "open", "done"];
 
     const fixedProjectTags = ["Personal", "Work"];
 
@@ -1565,7 +1559,6 @@
         todos: [],
         filter: "all",
         projectFilter: "all",
-        routineFilter: "open",
         selectedDate: todayKey(),
         calendarMonth: thisMonthKey(),
         analysisMonth: thisMonthKey(),
@@ -1613,7 +1606,6 @@
       todoList: document.getElementById("todoList"),
       filterChips: document.getElementById("filterChips"),
       projectFilterChips: document.getElementById("projectFilterChips"),
-      routineFilterChips: document.getElementById("routineFilterChips"),
       journalSticker: document.getElementById("journalSticker"),
       journalBody: document.getElementById("journalBody"),
       quickNotes: document.getElementById("quickNotes"),
@@ -1830,7 +1822,6 @@
         todos: Array.isArray(parsed.todos) ? parsed.todos : [],
         filter: ["all", "open", "done"].includes(parsed.filter) ? parsed.filter : "all",
         projectFilter: parsed.projectFilter || "all",
-        routineFilter: ROUTINE_FILTERS.includes(parsed.routineFilter) ? parsed.routineFilter : "open",
         selectedDate,
         calendarMonth: forceToday
           ? today.slice(0, 7)
@@ -1887,7 +1878,6 @@
         todos: state.todos,
         filter: state.filter,
         projectFilter: state.projectFilter,
-        routineFilter: state.routineFilter,
         selectedDate: state.selectedDate,
         calendarMonth: state.calendarMonth,
         analysisMonth: state.analysisMonth,
@@ -2265,17 +2255,10 @@
       const total = state.routines.length;
       const done = state.routines.filter((r) => r.done).length;
       const ratio = total ? Math.round((done / total) * 100) : 0;
-      const routines = state.routines.filter((routine) => {
-        if (state.routineFilter === "open") return !routine.done;
-        if (state.routineFilter === "done") return routine.done;
-        return true;
-      });
+      const routines = state.routines;
 
       if (!routines.length) {
-        const emptyText = state.routineFilter === "open"
-          ? "진행중 루틴이 없습니다."
-          : (state.routineFilter === "done" ? "완료된 루틴이 없습니다." : "등록된 루틴이 없습니다.");
-        el.routineList.innerHTML = `<div class="routine-empty">${emptyText}</div>`;
+        el.routineList.innerHTML = '<div class="routine-empty">등록된 루틴이 없습니다.</div>';
       } else {
         el.routineList.innerHTML = routines.map((r) => `
           <div class="routine-item ${r.done ? "done" : ""}" data-rid="${r.id}">
@@ -2313,11 +2296,6 @@
       [...el.filterChips.querySelectorAll(".chip")].forEach((chip) => {
         chip.classList.toggle("active", chip.dataset.filter === state.filter);
       });
-      if (el.routineFilterChips) {
-        [...el.routineFilterChips.querySelectorAll(".chip")].forEach((chip) => {
-          chip.classList.toggle("active", chip.dataset.routineFilter === state.routineFilter);
-        });
-      }
 
       setActiveTab(state.activeTab || "calendar", false);
 
@@ -3058,21 +3036,6 @@
         renderProjectFilters();
         renderTodos();
       });
-
-      if (el.routineFilterChips) {
-        el.routineFilterChips.addEventListener("click", (e) => {
-          const chip = e.target.closest("[data-routine-filter]");
-          if (!chip) return;
-          const filter = chip.dataset.routineFilter;
-          if (!ROUTINE_FILTERS.includes(filter)) return;
-          state.routineFilter = filter;
-          save();
-          renderRoutines();
-          [...el.routineFilterChips.querySelectorAll(".chip")].forEach((item) => {
-            item.classList.toggle("active", item.dataset.routineFilter === state.routineFilter);
-          });
-        });
-      }
 
       ["journalBody", "quickNotes"].forEach((key) => {
         el[key].addEventListener("input", () => {
