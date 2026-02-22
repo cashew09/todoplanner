@@ -408,6 +408,9 @@
       gap: 8px;
       grid-template-columns: 1fr 1fr;
     }
+    .character-grid .full {
+      grid-column: 1 / -1;
+    }
 
     .episode-grid {
       display: grid;
@@ -603,10 +606,11 @@
           <div class="title-row">
             <div>
               <h3>세계관 / 마법 규칙</h3>
-              <p class="sub">권력 구조, 금기, 대가를 먼저 명시하세요.</p>
+              <p class="sub">항목을 추가해서 세계관 규칙을 분리 관리하세요.</p>
             </div>
+            <button class="mini-btn" id="addSettingBtn">항목 추가</button>
           </div>
-          <textarea id="worldRule" placeholder="예: 마력은 기억을 대가로 사용한다. 황실 혈통만 성문 인장을 해제할 수 있다."></textarea>
+          <div class="list" id="settingList"></div>
         </article>
       </section>
     </section>
@@ -666,9 +670,18 @@
         id: makeId("char"),
         name: "",
         role: "",
+        appearance: "",
         desire: "",
         secret: "",
         note: ""
+      };
+    }
+
+    function defaultSettingItem() {
+      return {
+        id: makeId("set"),
+        title: "",
+        content: ""
       };
     }
 
@@ -691,6 +704,7 @@
       premise: "",
       keywords: ["계약결혼", "회귀", "궁정"],
       characters: [defaultCharacter()],
+      settings: [defaultSettingItem()],
       worldRule: "",
       episodes: [defaultEpisode()],
       selectedEpisodeId: "",
@@ -718,7 +732,8 @@
       keywordList: document.getElementById("keywordList"),
       addCharacterBtn: document.getElementById("addCharacterBtn"),
       characterList: document.getElementById("characterList"),
-      worldRule: document.getElementById("worldRule"),
+      addSettingBtn: document.getElementById("addSettingBtn"),
+      settingList: document.getElementById("settingList"),
       addEpisodeBtn: document.getElementById("addEpisodeBtn"),
       episodeList: document.getElementById("episodeList"),
       episodeEditorLabel: document.getElementById("episodeEditorLabel"),
@@ -811,10 +826,28 @@
           <div class="character-grid">
             <input type="text" data-field="name" value="${escapeHTML(item.name)}" placeholder="이름" />
             <input type="text" data-field="role" value="${escapeHTML(item.role)}" placeholder="역할 (주인공/남주/조연)" />
+            <input class="full" type="text" data-field="appearance" value="${escapeHTML(item.appearance)}" placeholder="외모 묘사 (헤어, 눈동자, 인상, 체형 등)" />
             <input type="text" data-field="desire" value="${escapeHTML(item.desire)}" placeholder="욕망 / 목표" />
             <input type="text" data-field="secret" value="${escapeHTML(item.secret)}" placeholder="비밀 / 약점" />
           </div>
           <textarea data-field="note" placeholder="관계성, 서사 포인트">${escapeHTML(item.note)}</textarea>
+        </article>
+      `).join("");
+    }
+
+    function renderSettings() {
+      if (!state.settings.length) {
+        el.settingList.innerHTML = '<div class="empty">설정 항목을 추가해 주세요.</div>';
+        return;
+      }
+      el.settingList.innerHTML = state.settings.map((item, index) => `
+        <article class="item" data-setting-id="${item.id}">
+          <div class="item-head">
+            <span class="item-title">Setting ${index + 1}</span>
+            <button class="mini-btn danger" data-remove-setting="${item.id}">삭제</button>
+          </div>
+          <input type="text" data-field="title" value="${escapeHTML(item.title)}" placeholder="항목명 (예: 마법 대가, 귀족 서열, 금기)" />
+          <textarea data-field="content" placeholder="해당 설정 설명">${escapeHTML(item.content)}</textarea>
         </article>
       `).join("");
     }
@@ -858,10 +891,10 @@
       el.workSubtitle.value = state.workSubtitle;
       el.toneSelect.value = state.tone;
       el.premise.value = state.premise;
-      el.worldRule.value = state.worldRule;
       el.ideaNote.value = state.ideaNote;
       renderKeywords();
       renderCharacters();
+      renderSettings();
       renderEpisodes();
       syncEpisodeEditor();
       setActiveTab(state.activeTab, false);
@@ -900,6 +933,31 @@
     function normalizeState() {
       if (!Array.isArray(state.keywords)) state.keywords = [];
       if (!Array.isArray(state.characters)) state.characters = [];
+      state.characters = state.characters.map((item) => ({
+        ...defaultCharacter(),
+        ...item,
+        id: String(item && item.id ? item.id : makeId("char")),
+        appearance: String(item && item.appearance ? item.appearance : ""),
+        note: String(item && item.note ? item.note : "")
+      }));
+      if (!Array.isArray(state.settings)) state.settings = [];
+      state.settings = state.settings.map((item) => ({
+        ...defaultSettingItem(),
+        ...item,
+        id: String(item && item.id ? item.id : makeId("set")),
+        title: String(item && item.title ? item.title : ""),
+        content: String(item && item.content ? item.content : "")
+      }));
+      if (!state.settings.length && typeof state.worldRule === "string" && state.worldRule.trim()) {
+        state.settings.push({
+          ...defaultSettingItem(),
+          title: "기본 설정",
+          content: state.worldRule
+        });
+      }
+      if (!state.settings.length) {
+        state.settings.push(defaultSettingItem());
+      }
       if (!Array.isArray(state.episodes)) state.episodes = [];
       state.episodes = state.episodes.map((item) => ({
         ...defaultEpisode(),
@@ -954,7 +1012,7 @@
         });
       });
 
-      ["workTitle", "workSubtitle", "premise", "worldRule", "ideaNote"].forEach((key) => {
+      ["workTitle", "workSubtitle", "premise", "ideaNote"].forEach((key) => {
         el[key].addEventListener("input", () => {
           state[key] = el[key].value;
           queueSave();
@@ -1015,6 +1073,33 @@
         state.characters = state.characters.filter((item) => item.id !== id);
         queueSave();
         renderCharacters();
+      });
+
+      el.addSettingBtn.addEventListener("click", () => {
+        state.settings.push(defaultSettingItem());
+        queueSave();
+        renderSettings();
+      });
+
+      el.settingList.addEventListener("input", (e) => {
+        const row = e.target.closest("[data-setting-id]");
+        if (!row) return;
+        const item = state.settings.find((s) => s.id === row.dataset.settingId);
+        if (!item) return;
+        const field = e.target.dataset.field;
+        if (!field || !(field in item)) return;
+        item[field] = e.target.value;
+        queueSave();
+      });
+
+      el.settingList.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-remove-setting]");
+        if (!btn) return;
+        const id = btn.dataset.removeSetting;
+        state.settings = state.settings.filter((item) => item.id !== id);
+        if (!state.settings.length) state.settings.push(defaultSettingItem());
+        queueSave();
+        renderSettings();
       });
 
       el.addEpisodeBtn.addEventListener("click", () => {
