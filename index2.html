@@ -798,6 +798,12 @@
       margin-bottom: 10px;
       flex-wrap: wrap;
     }
+    .calendar-legend {
+      margin: -2px 0 10px;
+      font-size: 11px;
+      color: #5a6f8d;
+      line-height: 1.35;
+    }
     .month-nav-inline {
       display: inline-flex;
       align-items: center;
@@ -882,22 +888,31 @@
 
     .day-meta-grid {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 4px;
     }
 
     .day-meta {
-      font-size: 10px;
+      font-size: 11px;
       color: #2d5a96;
       border-radius: 8px;
       background: #ecf3ff;
       border: 1px solid #cfe0ff;
-      padding: 2px 6px;
+      padding: 3px 6px;
       display: inline-flex;
       align-items: center;
       justify-content: space-between;
       gap: 6px;
-      width: 100%;
+      width: auto;
       line-height: 1.2;
+      min-height: 22px;
+      white-space: nowrap;
+    }
+    .day-meta strong {
+      font-family: "Outfit", sans-serif;
+      font-size: 11px;
+      color: #1d4f87;
+      letter-spacing: -0.01em;
     }
 
     .day-meta.flag {
@@ -1263,6 +1278,52 @@
       input[type="text"], input[type="date"], input[type="month"], textarea, select {
         font-size: 16px;
       }
+      .calendar-head {
+        margin-bottom: 8px;
+      }
+      .calendar-head .sub {
+        font-size: 11px;
+        line-height: 1.42;
+      }
+      .calendar-legend {
+        font-size: 10px;
+        margin-bottom: 8px;
+      }
+      .month-nav-btn {
+        width: 32px;
+        height: 32px;
+      }
+      .month-nav-text {
+        min-width: 80px;
+        font-size: 15px;
+      }
+      .weekday-row, .calendar-grid {
+        gap: 4px;
+      }
+      .weekday {
+        font-size: 11px;
+        padding: 3px 0;
+      }
+      .day-cell {
+        min-height: 102px;
+        padding: 6px;
+        gap: 5px;
+      }
+      .day-num {
+        font-size: 14px;
+      }
+      .day-meta-grid {
+        gap: 3px;
+      }
+      .day-meta {
+        font-size: 9.5px;
+        padding: 2px 4px;
+        border-radius: 7px;
+        min-height: 19px;
+      }
+      .day-meta strong {
+        font-size: 10px;
+      }
     }
   </style>
 </head>
@@ -1446,6 +1507,7 @@
             </div>
             <input type="month" id="calendarMonth" hidden />
           </div>
+          <p class="calendar-legend">주황: 루틴 일부 달성, 파랑: 루틴 전체 달성, J: 저널, Q: 퀵노트</p>
           <div class="weekday-row" id="weekdayRow"></div>
           <div class="calendar-grid" id="calendarGrid"></div>
         </article>
@@ -2530,10 +2592,10 @@
 
         const metaHtml = `
           <div class="day-meta-grid">
-            <span class="day-meta">업무 ${summary.todoCount}건</span>
-            <span class="day-meta routine-meta ${routineState === "none" ? "" : routineState}">루틴 ${summary.routineDone}/${summary.routineTotal}</span>
-            <span class="day-meta flag ${summary.journalLogged ? "" : "off"}">저널 ${summary.journalLogged ? "기록" : "없음"}</span>
-            <span class="day-meta flag ${summary.quickLogged ? "" : "off"}">노트 ${summary.quickLogged ? "기록" : "없음"}</span>
+            <span class="day-meta"><span>업무</span><strong>${summary.todoCount}</strong></span>
+            <span class="day-meta routine-meta ${routineState === "none" ? "" : routineState}"><span>루틴</span><strong>${summary.routineDone}/${summary.routineTotal}</strong></span>
+            <span class="day-meta flag ${summary.journalLogged ? "" : "off"}" title="저널 기록 여부"><span>J</span><strong>${summary.journalLogged ? "O" : "-"}</strong></span>
+            <span class="day-meta flag ${summary.quickLogged ? "" : "off"}" title="퀵노트 기록 여부"><span>Q</span><strong>${summary.quickLogged ? "O" : "-"}</strong></span>
           </div>
         `;
         cells.push(`
