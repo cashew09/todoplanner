@@ -92,22 +92,128 @@
       font-size: 15px;
     }
 
-    .toolbar {
+    .settings-trigger {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.38);
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      place-items: center;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(11, 31, 61, 0.24);
+      backdrop-filter: blur(3px);
+    }
+
+    .settings-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 27, 50, 0.42);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .settings-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    body.settings-open {
+      overflow: hidden;
+    }
+
+    .settings-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(390px, 92vw);
+      height: 100vh;
+      background: #fff;
+      border-left: 1px solid #d7e3f5;
+      box-shadow: -14px 0 30px rgba(13, 34, 67, 0.2);
+      z-index: 100;
+      transform: translateX(102%);
+      transition: transform 0.24s ease;
+      padding: 16px 14px 20px;
+      display: grid;
+      grid-auto-rows: min-content;
+      align-content: start;
+      gap: 12px;
+      overflow-y: auto;
+    }
+    .settings-drawer.open {
+      transform: translateX(0);
+    }
+    .settings-drawer::before {
+      content: "설정";
+      position: absolute;
+      left: -36px;
+      top: 80px;
+      width: 36px;
+      height: 120px;
+      border-radius: 10px 0 0 10px;
+      border: 1px solid #d7e3f5;
+      border-right: 0;
+      background: #fff;
+      color: #2b5c98;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+
+    .settings-drawer-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       gap: 10px;
-      width: min(360px, 100%);
+      padding-bottom: 8px;
+      border-bottom: 1px solid #dce7f8;
+    }
+    .settings-drawer-head h3 {
+      margin: 0;
+      color: #214e88;
+      font-family: "Outfit", sans-serif;
+      font-size: 18px;
+    }
+    .settings-close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid #d1dff5;
+      background: #f2f7ff;
+      color: #2b5c98;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    .settings-section {
+      border: 1px solid #d8e3f4;
+      border-radius: 12px;
+      background: #f8fbff;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+    .settings-section h4 {
+      margin: 0;
+      color: #1f4f8b;
+      font-family: "Outfit", sans-serif;
+      font-size: 14px;
     }
 
     .account-card {
-      margin-top: 14px;
-      border-radius: var(--radius-md);
-      padding: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      background: rgba(14, 37, 72, 0.34);
-      backdrop-filter: blur(5px);
-      position: relative;
-      z-index: 2;
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid #d9e5f8;
+      background: #fff;
       display: grid;
       gap: 8px;
     }
@@ -118,13 +224,14 @@
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
-      color: rgba(255, 255, 255, 0.94);
+      color: #4f6383;
       font-size: 12px;
     }
 
     .account-user {
       font-size: 13px;
       font-weight: 700;
+      color: #1d477c;
     }
 
     .account-sync {
@@ -133,10 +240,10 @@
       gap: 6px;
       border-radius: 999px;
       padding: 3px 9px;
-      border: 1px solid rgba(255, 255, 255, 0.38);
-      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid #c9dbf8;
+      background: #edf4ff;
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.92);
+      color: #365e92;
       white-space: nowrap;
     }
 
@@ -145,18 +252,18 @@
       width: 8px;
       height: 8px;
       border-radius: 999px;
-      background: #9ad0ff;
-      box-shadow: 0 0 0 3px rgba(154, 208, 255, 0.18);
+      background: #6fb3ff;
+      box-shadow: 0 0 0 3px rgba(111, 179, 255, 0.18);
     }
 
     .account-sync.is-live::before {
-      background: #5af0bf;
-      box-shadow: 0 0 0 3px rgba(90, 240, 191, 0.22);
+      background: #46d79c;
+      box-shadow: 0 0 0 3px rgba(70, 215, 156, 0.2);
     }
 
     .account-sync.is-saving::before {
-      background: #ffcd74;
-      box-shadow: 0 0 0 3px rgba(255, 205, 116, 0.22);
+      background: #f0b14e;
+      box-shadow: 0 0 0 3px rgba(240, 177, 78, 0.2);
     }
 
     .account-auth {
@@ -167,23 +274,40 @@
     }
 
     .account-auth input {
-      border: 1px solid rgba(255, 255, 255, 0.35);
+      border: 1px solid #d4e1f5;
       border-radius: 10px;
       padding: 10px;
-      background: rgba(255, 255, 255, 0.14);
-      color: #fff;
+      background: #fff;
+      color: #264a79;
       font-size: 13px;
       min-width: 0;
     }
 
     .account-auth input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
+      color: #8fa4c2;
     }
 
     .account-actions {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+    }
+
+    .settings-drawer .btn.ghost {
+      background: #edf4ff;
+      color: #2f67af;
+      border: 1px solid #cfe0ff;
+    }
+
+    .settings-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .settings-actions .btn.main {
+      background: #2f67af;
+      color: #fff;
+      box-shadow: none;
     }
 
     .btn.small {
@@ -193,7 +317,7 @@
 
     .auth-help {
       margin: 0;
-      color: rgba(255, 255, 255, 0.84);
+      color: #5a7190;
       font-size: 11px;
       line-height: 1.4;
     }
@@ -1242,8 +1366,26 @@
       .quick-add { grid-template-columns: 1fr; }
       .annual-grid { grid-template-columns: 1fr; }
       .btn { width: 100%; }
-      .toolbar { width: 100%; }
-      .toolbar .btn { width: 100%; }
+      .settings-trigger {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        font-size: 21px;
+      }
+      .settings-drawer {
+        width: min(380px, 94vw);
+        padding: 14px 12px 18px;
+      }
+      .settings-drawer::before {
+        left: -30px;
+        width: 30px;
+        height: 108px;
+        top: 72px;
+        font-size: 11px;
+      }
+      .settings-actions {
+        grid-template-columns: 1fr;
+      }
       .account-auth {
         grid-template-columns: 1fr;
       }
@@ -1335,28 +1477,42 @@
           <h1>Smart Todo Planner</h1>
           <p>일상과 업무를 차분하게 정리할 수 있는 통합 플래너입니다. 오늘 해야 할 일부터 주간 흐름, 연간 누적까지 한 화면에서 부드럽고 명확하게 관리해보세요.</p>
         </div>
-        <div class="toolbar">
-          <button class="btn main" id="exportBtn">백업 내보내기</button>
-          <button class="btn ghost" id="importBtn">백업 가져오기</button>
-          <input type="file" id="importFile" accept="application/json" hidden />
-        </div>
+        <button class="settings-trigger" id="settingsOpenBtn" aria-label="설정 열기" aria-controls="settingsDrawer" aria-expanded="false">⚙</button>
       </div>
-      <div class="account-card">
-        <div class="account-head">
-          <div class="account-user" id="authStatus">게스트 모드</div>
-          <div class="account-sync" id="syncStatus">로컬 저장 전용</div>
+      <div class="settings-backdrop" id="settingsBackdrop" hidden></div>
+      <aside class="settings-drawer" id="settingsDrawer" aria-hidden="true">
+        <div class="settings-drawer-head">
+          <h3>설정</h3>
+          <button class="settings-close-btn" id="settingsCloseBtn" aria-label="설정 닫기">✕</button>
         </div>
-        <div class="account-auth" id="authForm">
-          <input type="email" id="authEmail" placeholder="이메일" autocomplete="username" />
-          <input type="password" id="authPassword" placeholder="비밀번호" autocomplete="current-password" />
-          <div class="account-actions">
-            <button class="btn main small" id="loginBtn">로그인</button>
-            <button class="btn ghost small" id="signupBtn">회원가입</button>
-            <button class="btn ghost small" id="logoutBtn" hidden>로그아웃</button>
+        <section class="settings-section">
+          <h4>로그인</h4>
+          <div class="account-card">
+            <div class="account-head">
+              <div class="account-user" id="authStatus">게스트 모드</div>
+              <div class="account-sync" id="syncStatus">로컬 저장 전용</div>
+            </div>
+            <div class="account-auth" id="authForm">
+              <input type="email" id="authEmail" placeholder="이메일" autocomplete="username" />
+              <input type="password" id="authPassword" placeholder="비밀번호" autocomplete="current-password" />
+              <div class="account-actions">
+                <button class="btn main small" id="loginBtn">로그인</button>
+                <button class="btn ghost small" id="signupBtn">회원가입</button>
+                <button class="btn ghost small" id="logoutBtn" hidden>로그아웃</button>
+              </div>
+            </div>
+            <p class="auth-help" id="authHelp">로그인하면 내 데이터만 불러오고 다른 사용자는 볼 수 없습니다. Firebase 설정 전에는 로컬 저장만 동작합니다.</p>
           </div>
-        </div>
-        <p class="auth-help" id="authHelp">로그인하면 내 데이터만 불러오고 다른 사용자는 볼 수 없습니다. Firebase 설정 전에는 로컬 저장만 동작합니다.</p>
-      </div>
+        </section>
+        <section class="settings-section">
+          <h4>백업</h4>
+          <div class="settings-actions">
+            <button class="btn main" id="exportBtn">백업 내보내기</button>
+            <button class="btn ghost" id="importBtn">백업 가져오기</button>
+            <input type="file" id="importFile" accept="application/json" hidden />
+          </div>
+        </section>
+      </aside>
       <div class="stats">
         <article class="stat">
           <div class="label">선택날짜 남은 할일</div>
@@ -1657,6 +1813,10 @@
       globalDatePicker: document.getElementById("globalDatePicker"),
       prevDateBtn: document.getElementById("prevDateBtn"),
       nextDateBtn: document.getElementById("nextDateBtn"),
+      settingsOpenBtn: document.getElementById("settingsOpenBtn"),
+      settingsCloseBtn: document.getElementById("settingsCloseBtn"),
+      settingsDrawer: document.getElementById("settingsDrawer"),
+      settingsBackdrop: document.getElementById("settingsBackdrop"),
       todoInput: document.getElementById("todoInput"),
       todoTagSelect: document.getElementById("todoTagSelect"),
       topTaskText: document.getElementById("topTaskText"),
@@ -2244,6 +2404,17 @@
       if (el.analysisMonthText) el.analysisMonthText.textContent = formatMonthDot(state.analysisMonth);
       if (tab === "analysis") renderAnalysis();
       if (persist) save();
+    }
+
+    function setSettingsDrawerOpen(open) {
+      const shouldOpen = Boolean(open);
+      if (!el.settingsDrawer || !el.settingsBackdrop || !el.settingsOpenBtn) return;
+      el.settingsDrawer.classList.toggle("open", shouldOpen);
+      el.settingsDrawer.setAttribute("aria-hidden", shouldOpen ? "false" : "true");
+      el.settingsBackdrop.hidden = !shouldOpen;
+      el.settingsBackdrop.classList.toggle("show", shouldOpen);
+      el.settingsOpenBtn.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+      document.body.classList.toggle("settings-open", shouldOpen);
     }
 
     function renderTodos() {
@@ -2928,7 +3099,30 @@
 
     function bindEvents() {
       el.tabButtons.forEach((btn) => {
-        btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+        btn.addEventListener("click", () => {
+          setActiveTab(btn.dataset.tab);
+          setSettingsDrawerOpen(false);
+        });
+      });
+
+      if (el.settingsOpenBtn) {
+        el.settingsOpenBtn.addEventListener("click", () => {
+          const isOpen = el.settingsDrawer && el.settingsDrawer.classList.contains("open");
+          setSettingsDrawerOpen(!isOpen);
+        });
+      }
+      if (el.settingsCloseBtn) {
+        el.settingsCloseBtn.addEventListener("click", () => {
+          setSettingsDrawerOpen(false);
+        });
+      }
+      if (el.settingsBackdrop) {
+        el.settingsBackdrop.addEventListener("click", () => {
+          setSettingsDrawerOpen(false);
+        });
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") setSettingsDrawerOpen(false);
       });
 
       el.loginBtn.addEventListener("click", async () => {
